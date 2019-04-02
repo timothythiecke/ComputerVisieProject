@@ -14,6 +14,9 @@ def showImagesHorizontally(windowname, *images):
 def saveImage(image, savePath):
     cv2.imwrite(savePath, image)
 
+def resizeImage(image, dimension):
+    return cv2.resize(src = image, dsize = dimension)
+
 def getSavePath(defaultPath, exNumber):
     filepath, filename = os.path.split(defaultPath)
     filename, extension = filename.split(".")

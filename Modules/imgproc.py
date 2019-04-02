@@ -2,8 +2,10 @@ import cv2
 import numpy
 import math
 
-# Converts the src image to grayscale and returns the result.
 def convertToGrayscale(src):
+    """
+    Converts the src image to grayscale and returns the result.
+    """
     return cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
 # Applies a binary threshold on a grayscale src image. The ratio specifies at which grayscale value it should switch from black to white. 
@@ -14,7 +16,7 @@ def binaryThreshold(src, ratio):
 
 # Sharpens the given src image and uses a (kernelSize x kernelSize) matrix
 def unsharpMasking(src, kernelSize):
-    blurredImage = cv2.GaussianBlur(src, (kernelSize, kernelSize), 0) # grote waarden gebruiken om te overdrijven
+    blurredImage = cv2.GaussianBlur(src, (kernelSize, kernelSize), 0) 
     diff = cv2.absdiff(src, blurredImage)
     unsharpImage = cv2.add(diff, src)
     return unsharpImage
@@ -35,16 +37,13 @@ def extractEdges(image, angle):
     result = cv2.convertScaleAbs(cv2.filter2D(convertToGrayscale(image), cv2.CV_32F, getDoGFilter(75, 20, 1, -15)))
     return result
 
-def detectLines(image, threshold1, threshold2):
+def detectLines(image, threshold1, threshold2, rho, theta):
     result = image.copy()
     image = convertToGrayscale(image)
     edges = cv2.Canny(image = image, threshold1 = threshold1, threshold2 = threshold2, L2gradient = True)
-    lines = cv2.HoughLinesP(image = edges, rho = 0.5, theta = numpy.pi / 180, threshold = 30, minLineLength = 50, maxLineGap = 10)
+    lines = cv2.HoughLinesP(image = edges, rho = rho, theta = theta, threshold = 30, maxLineGap = 10)
     for line in lines:
-        try:
-            cv2.line(img = result, pt1 = (line[0][0], line[0][1]), pt2 = (line[0][2], line[0][3]), color = (0,255,0), thickness = 1, lineType = cv2.LINE_AA)
-        except:
-            pass
+        cv2.line(img = result, pt1 = (line[0][0], line[0][1]), pt2 = (line[0][2], line[0][3]), color = (0,255,0), thickness = 1, lineType = cv2.LINE_AA)    
     return result
 
 def detectCorners(image):
@@ -75,4 +74,3 @@ def matchORBFeatures(image1, image2, nfeatures, nmatches):
     matches = matches[:nmatches]
     result = cv2.drawMatches(image1, keypoints1, image2, keypoints2, matches, None, matchColor=(0, 255, 0), flags = 2) 
     return result
-
