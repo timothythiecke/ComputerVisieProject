@@ -39,27 +39,13 @@ def detectLines(image, threshold1, threshold2):
     result = image.copy()
     image = convertToGrayscale(image)
     edges = cv2.Canny(image = image, threshold1 = threshold1, threshold2 = threshold2, L2gradient = True)
-    lines = cv2.HoughLines(image = edges, rho = 1, theta = numpy.pi / 180, threshold = 100)
-    x0 = 1
-    x1 = image.shape[0]
+    lines = cv2.HoughLinesP(image = edges, rho = 0.5, theta = numpy.pi / 180, threshold = 30, minLineLength = 50, maxLineGap = 10)
     for line in lines:
         try:
-            # rho = x*cos(theta) + y*sin(theta)
-            # y = -x*cot(theta) + rho*cosec(theta)
-            # -> a = -cos(theta)/sin(theta)
-            # -> b = rho/sin(theta)
-            (rho, theta) = (line[0][range(0, 2)])
-            a = -(math.cos(theta)/math.sin(theta))
-            b = rho / math.sin(theta)
-            y = lambda x: a*x + b
-            point1 = (x0, int(y(x0)))
-            point2 = (x1, int(y(x1)))
-            print(point1, point2)
-            cv2.line(img = result, pt1 = point1, pt2 = point2, color = (0,0,0), thickness = 1, lineType = cv2.LINE_AA)  
+            cv2.line(img = result, pt1 = (line[0][0], line[0][1]), pt2 = (line[0][2], line[0][3]), color = (0,255,0), thickness = 1, lineType = cv2.LINE_AA)
         except:
             pass
     return result
-       
 
 def detectCorners(image):
     corners_image = cv2.goodFeaturesToTrack(image = convertToGrayscale(image), maxCorners = 100, qualityLevel = 0.01, minDistance = 2)
