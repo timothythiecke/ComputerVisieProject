@@ -3,6 +3,7 @@ import numpy
 import math
 import screeninfo
 from Modules import optcheck, highgui, imgproc
+from Modules import PaintingDetector as pd
 
 def main():
     imagePath = optcheck.getArguments()[0]
@@ -11,7 +12,9 @@ def main():
     monitor = screeninfo.get_monitors()[0]
     image = highgui.resizeImage(image, (monitor.width >> 1, monitor.height >> 1)) # adjust width and height to base screen
     
-    image = imgproc.detectLines(image, 50, 200, rho = 1, theta = numpy.pi / 180)
+    paintingDetector = pd.PaintingDetector()
+    image = paintingDetector.detectPainting(image)
+
     highgui.showImage("name",image)
  
 
