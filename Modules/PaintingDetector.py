@@ -2,6 +2,12 @@ import numpy
 import cv2
 from Modules import imgproc, colors, highgui
 
+# 3 steps:
+#   1) Feature detection:   search the image for locations that are likely to match well in other images
+#   2) Feature description: convert each region around detected locations into a more compact and invariant descriptor that can be matched against other descriptors
+#   3) Feature matching:    search for matches in other images
+
+
 class PaintingDetector():
     @classmethod
     def detectPainting(self, image, lowThreshold, ratio):
@@ -10,6 +16,7 @@ class PaintingDetector():
         highgui.drawLines(image, lines)
         highgui.drawIntersections(image, lines)
         return image
+    
 
     @classmethod
     def _getLines(self, image, lowThreshold, ratio, rho, theta):
@@ -27,8 +34,8 @@ class PaintingDetector():
 
     @classmethod
     def _detectRectangles(self, image, lowThreshold, ratio):
+        copy = image.copy()
         image = imgproc.convertToGrayscale(image)
         edges = cv2.Canny(image=image, threshold1=lowThreshold, threshold2=lowThreshold * ratio)
         contours, hierarchy = cv2.findContours(image=edges, mode=cv2.RETR_TREE , method=cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(image=image, contours=contours, contourIdx=-1, color=colors.GREEN, thickness = 2)
-
+        cv2.drawContours(image=copy, contours=contours, contourIdx=-1, color=colors.GREEN, thickness = 2)
