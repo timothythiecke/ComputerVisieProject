@@ -12,7 +12,7 @@ class PaintingDetector():
     @classmethod
     def detectPainting(self, image, lowThreshold, ratio):
         # canny recommends an upper:lower ratio between 2:1 and 3:1
-        lines = self._getLines(image=image, lowThreshold=lowThreshold, ratio=ratio, rho=1, theta=numpy.pi/180)
+        lines = self._getLines(image=image, lowThreshold=lowThreshold, ratio=ratio, rho=1, theta=numpy.pi/90)
         highgui.drawLines(image, lines)
         highgui.drawIntersections(image, lines)
         return image
@@ -31,11 +31,3 @@ class PaintingDetector():
                                 threshold=100, maxLineGap=500) # take high line gap because the original pictures have a high resolution
         
         return lines
-
-    @classmethod
-    def _detectRectangles(self, image, lowThreshold, ratio):
-        copy = image.copy()
-        image = imgproc.convertToGrayscale(image)
-        edges = cv2.Canny(image=image, threshold1=lowThreshold, threshold2=lowThreshold * ratio)
-        contours, hierarchy = cv2.findContours(image=edges, mode=cv2.RETR_TREE , method=cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(image=copy, contours=contours, contourIdx=-1, color=colors.GREEN, thickness = 2)
