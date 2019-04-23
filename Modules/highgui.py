@@ -36,29 +36,14 @@ def drawLines(image, lines):
                     color=colors.GREEN, thickness=2, lineType=cv2.LINE_AA)
 
 
-def drawIntersections(image, lines):
+def drawIntersections(image, points):
     """
-    Draws circles around intersections between lines.
+    Draws circles around intersections.
     """
-    # based on https://stackoverflow.com/questions/4543506/algorithm-for-intersection-of-2-lines
-    if lines is not None:
-        for i in range(0, len(lines)):
-            # A1 * X + B1 * Y = C1
-            (x1, y1, x2, y2) = (lines[i][0][0], lines[i][0][1], lines[i][0][2] ,lines[i][0][3]) 
-            A1 = y2 - y1
-            B1 = x1 - x2
-            C1 = A1 * x1 + B1 * y1
-            for j in range(1, len(lines)):   
-                # A2 * X + B1 * 2 = C2        
-                (x3, y3, x4, y4) = (lines[j][0][0], lines[j][0][1], lines[j][0][2] ,lines[j][0][3]) 
-                A2 = y4 - y3
-                B2 = x3 - x4
-                C2 = A2 * x3 + B2 * y3
-                delta = A1 * B2 - A2 * B1
-                if delta != 0:
-                    x = int((B2 * C1 - B1 * C2) / delta)
-                    y = int((A1 * C2 - A2 * C1) / delta)
-                    cv2.circle(img = image, center = (x, y), radius = 5, color = colors.RED, thickness=2)
+    for point in points:
+        x = point[0]
+        y = point[1]
+        cv2.circle(img = image, center = (x, y), radius = 5, color = colors.RED, thickness=2)
 
 
 def showImagesHorizontally(windowname, *images): 

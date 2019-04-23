@@ -10,7 +10,7 @@ def getArguments():
     parser.add_argument('imagePath', type=str, nargs='+', help='The path to the image')
     args = parser.parse_args()
 
-    for arg in args.image_paths:
+    for arg in args.imagePath:
         if(not os.path.isfile(arg)):
             print(f"'{arg}' not an existing file.")
             exit(1)
