@@ -24,8 +24,6 @@ def showImage(image, windowname):
     cv2.imshow(windowname, image)
     cv2.waitKey()
 
-<<<<<<< HEAD
-=======
 def drawLines(image, lines):
     """
     Draws lines which are the result of the HoughLinesP function onto the image.
@@ -62,7 +60,6 @@ def drawIntersections(image, lines):
                     y = int((A1 * C2 - A2 * C1) / delta)
                     cv2.circle(img = image, center = (x, y), radius = 5, color = colors.RED, thickness=2)
 
->>>>>>> b35a41e0ac24c253bb580ac94f8487a69d4f1fcd
 
 def showImagesHorizontally(windowname, *images): 
     """

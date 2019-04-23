@@ -16,12 +16,8 @@ def main():
 
     image = paintingDetector.detectPainting(image, lowThreshold = 100, ratio = 2)
 
-
-
     highgui.showImage(imagePath, image)
     #highgui.saveImage(image, highgui.getSavePath(imagePath, 'edges'))
-
-
 
 if __name__ == '__main__':
     main()
