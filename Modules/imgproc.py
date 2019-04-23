@@ -1,12 +1,11 @@
 import cv2
-import numpy
-import math
 
 
 def convertToGrayscale(src):
     """
     Converts the src image to grayscale and returns the result.
     """
+<<<<<<< HEAD
     return cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
 
@@ -90,3 +89,6 @@ def matchORBFeatures(image1, image2, nfeatures, nmatches):
     matches = matches[:nmatches]
     result = cv2.drawMatches(image1, keypoints1, image2, keypoints2, matches, None, matchColor=(0, 255, 0), flags = 2) 
     return result
+=======
+    return cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+>>>>>>> b35a41e0ac24c253bb580ac94f8487a69d4f1fcd
