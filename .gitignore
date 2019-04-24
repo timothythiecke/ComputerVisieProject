@@ -1,2 +1,9 @@
 /Images/**/*.jpg
 /Modules/__pycache__/**
+/Paper/*.aux
+/Paper/*.log
+/Paper/*.synctex.gz
+/Paper/*.blg
+/Paper/*.bbl
+/Paper/*.bak
+/Paper/*.sav
