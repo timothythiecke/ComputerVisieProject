@@ -12,8 +12,10 @@ def main():
     monitor = screeninfo.get_monitors()[0]
     image = highgui.resizeImage(image, (monitor.width >> 1, monitor.height >> 1)) # adjust width and height relative to base screen
 
+
     # canny recommends an upper:lower ratio between 2:1 and 3:1
-    image = paintingDetector.detectPainting(image, lowThreshold = 50, ratio = 3)
+    # IDEA: to determine threshold: start high and if no rectangle could be found, lower the thresholds
+    image = paintingDetector.detectPainting(image, lowCannyThreshold = 50, cannyRatio = 3, houghThreshold = 75)
 
     highgui.showImage(image, imagePath)
     #highgui.saveImage(image, highgui.getSavePath(imagePath, 'edges'))

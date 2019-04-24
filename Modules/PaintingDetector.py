@@ -9,14 +9,16 @@ from Modules import imgproc, colors, highgui
 #   2) Feature description: convert each region around detected locations into a more compact and invariant descriptor that can be matched against other descriptors
 #   3) Feature matching:    search for matches in other images
 
-
+# https://www.researchgate.net/publication/228697341_Perspective_rectangle_detection
 class PaintingDetector():
     @classmethod
-    def detectPainting(self, image, lowThreshold, ratio):
-        lines = self._getLines(image=image, lowThreshold=lowThreshold, ratio=ratio, rho=1, theta=numpy.pi/180)
-        self._findVanishingPoint(image, self._findIntersections(lines))
+    def detectPainting(self, image, lowCannyThreshold, cannyRatio, houghThreshold):
+        lines = self._getLines(image=image, lowCannyThreshold=lowCannyThreshold, cannyRatio=cannyRatio, rho=1, theta=numpy.pi/180, houghThreshold=houghThreshold)
+        intersections = self._findIntersections(lines)
         highgui.drawLines(image, lines)
-        highgui.drawIntersections(image, self._findIntersections(lines))
+        highgui.drawPoints(image, intersections, colors.RED)
+        highgui.drawPoints(image, self._findVanishingPoints(image, intersections), colors.CYAN)
+    
         return image
 
     @classmethod
@@ -44,54 +46,48 @@ class PaintingDetector():
         return intersections
     
     @classmethod
-    def _findVanishingPoint(self, image, intersections):
+    def _findVanishingPoints(self, image, intersections):
         imageHeight = image.shape[0]
         imageWidth = image.shape[1]
 
-        gridSize = min(imageHeight, imageWidth) // 3
-
+        gridSize = 5
         gridRows = (imageHeight // gridSize) + 1
         gridColumns = (imageWidth // gridSize) + 1
 
         maxIntersections = 0
-        vanishingPoint = (0, 0)
-
+        vanishingPoints = []
         for i, j in itertools.product(range(gridRows), range(gridColumns)):
             left = i * gridSize
             right = (i + 1) * gridSize
             bottom = j * gridSize
             top = (j + 1) * gridSize
-            cv2.rectangle(image, (left, bottom), (right,top), colors.ORANGE, 2)
-
             currentIntersections = 0
             for x, y in intersections:
                 if left < x < right and bottom < y < top:
                     currentIntersections += 1
-            
-            if currentIntersections > maxIntersections:
+            if currentIntersections > 3:
                 maxIntersections = currentIntersections
-                vanishingPoint = ((left + right) / 2, (bottom + top) / 2)
+                vanishingPoints.append(((left + right) / 2, (bottom + top) / 2))
+        for vanishingPoint in vanishingPoints:
+            x = int(vanishingPoint[0])
+            y = int(vanishingPoint[1])
         
-        x1 = int(vanishingPoint[0] - gridSize / 2)
-        y1 = int(vanishingPoint[1] - gridSize / 2)
-        x2 = int(vanishingPoint[0] + gridSize / 2)
-        y2 = int(vanishingPoint[1] + gridSize / 2)
-
-        cv2.rectangle(image, (x1, y1), (x2, y2), colors.CYAN, 2)
+        return vanishingPoints    
+        
     @classmethod
-    def _getLines(self, image, lowThreshold, ratio, rho, theta):
+    def _getLines(self, image, lowCannyThreshold, cannyRatio, rho, theta, houghThreshold):
         """
         Returns a list of lines in an image using the Hough space.
         """
         image = imgproc.convertToGrayscale(image)
         image = cv2.morphologyEx(image, cv2.MORPH_OPEN, numpy.ones((15, 15), numpy.uint8))
         edges = cv2.Canny(image=image,
-                          threshold1=lowThreshold,
-                          threshold2=lowThreshold * ratio,
+                          threshold1=lowCannyThreshold,
+                          threshold2=lowCannyThreshold * cannyRatio,
                           apertureSize=3, # 3 seems to be a perfect apertureSize, 5 is too much
                           L2gradient=True)
         lines = cv2.HoughLinesP(image=edges,
                                 rho=rho, theta=theta,
-                                threshold=100, maxLineGap=500) # take high line gap because the original pictures have a high resolution
+                                threshold=houghThreshold, maxLineGap=min(image.shape[0], image.shape[1]) / 2) # take high line gap because the original pictures have a high resolution
         
         return lines
