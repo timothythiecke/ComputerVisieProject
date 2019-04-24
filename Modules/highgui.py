@@ -17,7 +17,7 @@ def openImage(imagePath):
     return cv2.imread(imagePath)
 
 
-def showImage(image, windowname):
+def showImage(windowname, image):
     """
     Displays an image in the specified window
     """

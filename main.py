@@ -15,9 +15,8 @@ def main():
 
     # canny recommends an upper:lower ratio between 2:1 and 3:1
     # IDEA: to determine threshold: start high and if no rectangle could be found, lower the thresholds
-    image = paintingDetector.detectPainting(image, lowCannyThreshold = 50, cannyRatio = 3, houghThreshold = 75)
 
-    highgui.showImage(image, imagePath)
+    image = paintingDetector.detectPainting(image, lowCannyThreshold = 50, cannyRatio = 3, houghThreshold = 75)
     #highgui.saveImage(image, highgui.getSavePath(imagePath, 'edges'))
 
 if __name__ == '__main__':

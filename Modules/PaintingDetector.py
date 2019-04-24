@@ -13,12 +13,12 @@ from Modules import imgproc, colors, highgui
 class PaintingDetector():
     @classmethod
     def detectPainting(self, image, lowCannyThreshold, cannyRatio, houghThreshold):
-        lines = self._getLines(image=image, lowCannyThreshold=lowCannyThreshold, cannyRatio=cannyRatio, rho=1, theta=numpy.pi/180, houghThreshold=houghThreshold)
-        intersections = self._findIntersections(lines)
-        highgui.drawLines(image, lines)
-        highgui.drawPoints(image, intersections, colors.RED)
-        highgui.drawPoints(image, self._findVanishingPoints(image, intersections), colors.CYAN)
-    
+        #lines = self._getLines(image=image, lowCannyThreshold=lowCannyThreshold, cannyRatio=cannyRatio, rho=1, theta=numpy.pi/180, #houghThreshold=houghThreshold)
+        #intersections = self._findIntersections(lines)
+        #highgui.drawLines(image, lines)
+        #highgui.drawPoints(image, intersections, colors.RED)
+        #highgui.drawPoints(image, self._findVanishingPoints(image, intersections), colors.CYAN)
+        self._transformToStandardFormat(image=image, coördinates=[[100, 200], [200, 200], [200, 500], [100, 500]])
         return image
 
     @classmethod
@@ -91,3 +91,13 @@ class PaintingDetector():
                                 threshold=houghThreshold, maxLineGap=min(image.shape[0], image.shape[1]) / 2) # take high line gap because the original pictures have a high resolution
         
         return lines
+
+    @classmethod
+    def _transformToStandardFormat(self, image, coördinates):
+        src = numpy.array(coördinates, numpy.float32) # these coördinates must come from the rectangle that contains the painting
+        dst = numpy.array([[100, 200], [200, 200], [200, 500], [100, 500]], numpy.float32) # predefined coördinates of the rectangle
+                
+        M = cv2.getPerspectiveTransform(src, dst) # Get the transformation matrix
+        warped = cv2.warpPerspective(image, M, (-1, -1)) # warp the image
+
+        return warped
