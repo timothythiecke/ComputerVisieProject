@@ -13,12 +13,11 @@ from Modules import imgproc, colors, highgui
 class PaintingDetector():
     @classmethod
     def detectPainting(self, image, lowCannyThreshold, cannyRatio, houghThreshold):
-        #lines = self._getLines(image=image, lowCannyThreshold=lowCannyThreshold, cannyRatio=cannyRatio, rho=1, theta=numpy.pi/180, #houghThreshold=houghThreshold)
-        #intersections = self._findIntersections(lines)
-        #highgui.drawLines(image, lines)
-        #highgui.drawPoints(image, intersections, colors.RED)
-        #highgui.drawPoints(image, self._findVanishingPoints(image, intersections), colors.CYAN)
-        self._transformToStandardFormat(image=image, coördinates=[[100, 200], [200, 200], [200, 500], [100, 500]])
+        lines = self._getLines(image=image, lowCannyThreshold=lowCannyThreshold, cannyRatio=cannyRatio, rho=1, theta=numpy.pi/180, houghThreshold=houghThreshold)
+        intersections = self._findIntersections(lines)
+        highgui.drawLines(image, lines)
+        highgui.drawPoints(image, intersections, colors.RED)
+        highgui.drawPoints(image, self._findVanishingPoints(image, intersections), colors.CYAN)
         return image
 
     @classmethod
