@@ -2,7 +2,7 @@ import screeninfo
 import numpy
 from Modules import optcheck, highgui, imgproc
 from Modules import PaintingDetector as pd
-from Modules import gabor
+from Modules import LocalBinaryPattern as lbd
 
 def main():
     imagePath = optcheck.getArguments()[0]
@@ -18,7 +18,9 @@ def main():
     #image = paintingDetector.detectPainting(image, lowCannyThreshold = 50, cannyRatio = 3, houghThreshold = 75)
     #highgui.showImage(imagePath, image)
     #highgui.saveImage(image, highgui.getSavePath(imagePath, 'edges'))
-    segmentation = gabor.segmentImage(image, True)
-    highgui.showImage(imagePath, segmentation)
+    localBinaryPattern = lbd.LocalBinaryPattern()
+    localBinaryPattern.getFeatureVectorForImage(image, 1)
+    #gabor.segmentImage(image, True)
+  #  highgui.showImage(imagePath, segmentation)
 if __name__ == '__main__':
     main()
