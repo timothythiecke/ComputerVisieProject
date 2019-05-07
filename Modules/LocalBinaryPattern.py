@@ -33,7 +33,7 @@ class LocalBinaryPattern(object):
                 # 4. Compute the histogram, over the cell, of the frequency of each "number" occurring (i.e., each combination of which pixels are smaller and which are greater than the center). This histogram can be seen as a 256-dimensional feature vector.
                 histogram = [0] * 256
                 for value in values:
-                    histogram[value] += 1 # increase frequency for each occurance of value
+                    histogram[min(value, 255)] += 1 # increase frequency for each occurance of value
                 # 5. Concatenate (normalized) histograms of all cells. This gives a feature vector for the entire window.
                 featureVector.extend([histogram])    
-        print(featureVector)
+            return featureVector

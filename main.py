@@ -19,8 +19,9 @@ def main():
     #highgui.showImage(imagePath, image)
     #highgui.saveImage(image, highgui.getSavePath(imagePath, 'edges'))
     localBinaryPattern = lbd.LocalBinaryPattern()
-    localBinaryPattern.getFeatureVectorForImage(image, 1)
+    localBinaryPattern.getFeatureVectorForImage(image, radius = 1)
     #gabor.segmentImage(image, True)
   #  highgui.showImage(imagePath, segmentation)
+
 if __name__ == '__main__':
     main()
