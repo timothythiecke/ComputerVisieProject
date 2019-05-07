@@ -1,8 +1,10 @@
 import screeninfo
 import numpy
+from sklearn.svm import SVC
 from Modules import optcheck, highgui, imgproc
 from Modules import PaintingDetector as pd
 from Modules import LocalBinaryPattern as lbd
+from Modules import contour
 
 def main():
     imagePath = optcheck.getArguments()[0]
@@ -19,7 +21,13 @@ def main():
     #highgui.showImage(imagePath, image)
     #highgui.saveImage(image, highgui.getSavePath(imagePath, 'edges'))
     localBinaryPattern = lbd.LocalBinaryPattern()
-    localBinaryPattern.getFeatureVectorForImage(image, radius = 1)
+    featureVector = localBinaryPattern.getFeatureVectorForImage(image, radius = 1)
+    highgui.showImage("name", featureVector)
+    classifier = SVC(gamma= 'auto')
+    #contour.contour(image, debug=True)
+
+
+
     #gabor.segmentImage(image, True)
   #  highgui.showImage(imagePath, segmentation)
 
