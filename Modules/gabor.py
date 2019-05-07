@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from Modules import colors
-
+from sklearn.cluster import KMeans
 def segmentImage(image, debug = False):
     """
     Segments image in three by applying gabor filters
@@ -29,7 +29,7 @@ def segmentImage(image, debug = False):
     grayscale = np.zeros((0, 0))
     grayscale = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
     
-    cv2.imshow('gabor_grayscale', grayscale)
+    #cv2.imshow('gabor_grayscale', grayscale)
     
     # Init of filter bank parameters
     # TODO: these values need to be tweaked as they do not yield a perfect result yet
@@ -175,8 +175,9 @@ def segmentImage(image, debug = False):
 
     # Apply KMeans
     clusters = 3
-    compactness,labels,centers = cv2.kmeans(np.float32(data_set_magnitude), clusters, None,criteria, 10, flags) #Kmeans expects float32 TODO, does it change the values? see above
-    
+    #compactness,labels,centers = cv2.kmeans(np.float32(data_set_magnitude), clusters, None,criteria, 20, flags) #Kmeans expects float32 TODO, does it change the values? see above
+    kmeans = KMeans(n_clusters=3 random_state=0).fit(data_set_magnitude)
+    labels = kmeans.labels_
     if debug:
         print('Labels array: ', labels)
 
