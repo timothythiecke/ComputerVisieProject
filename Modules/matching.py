@@ -23,10 +23,12 @@ def match(image, dataSet, topMatchesCount = 5, debug = False):
             If set to true, the program will print additional information and open windows
     """
     
+    if debug:
+        print('Starting matching procedure...')
+
     ### Matching stage ###
     # Initiate SIFT detector
     orb = cv2.ORB_create()
-    #sift = cv2.SIFT()
     kp_result, desc_result = orb.detectAndCompute(image, None)
 
     # Create BFMatcher
@@ -35,9 +37,8 @@ def match(image, dataSet, topMatchesCount = 5, debug = False):
     i = 0
     results = []
     for data_set_tuple in dataSet:
-        data_set_image = data_set_tuple[0]
-        data_set_meta_data = data_set_tuple[1]
-        kp_d, desc_d = orb.detectAndCompute(data_set_image, None)
+        kp_d = data_set_tuple[2]
+        desc_d = data_set_tuple[3]
         matches = bf.match(desc_result, desc_d)
         matches = sorted(matches, key = lambda x:x.distance)
 
@@ -46,25 +47,34 @@ def match(image, dataSet, topMatchesCount = 5, debug = False):
         distance_sum = sum(match.distance for match in matches)
 
         if debug:
-            print('\tPainting', i, 'Sum of matches:', distance_sum)
-            #for m in matches:
-            #    print('\t', m.distance)
+            print('\tPainting', i, 'Sum of matches:', distance_sum, end = "")
 
-        comparison = cv2.drawMatches(img1 = image, keypoints1 = kp_result, img2 = data_set_image, keypoints2 = kp_d, matches1to2 = matches[:matches_to_use], outImg = None, flags = 2)
-        results.append((i, distance_sum, comparison))    
+        results.append((i, distance_sum, kp_result, kp_d, matches[:matches_to_use]))    
         i += 1
 
+    if debug:
+        print('\nMatching done!', 'Sorting results by smallest sum...')
+
     # Distance is the notion of similiarity
-    # The lower the distance, the mr=ore similar detected keypoints are
+    # The lower the distance, the more similar detected keypoints are
     # Therefore, the lower the sum of detected mathes, the higher the odds that it is a valid match
     # Sort the results array by the sum associated with the picture
     results = sorted(results, key = lambda x:x[1])
 
     # Show the best results
     for i in range(topMatchesCount):
+        image_path = './Images/DataSet/' + dataSet[results[i][0]][0] + '/' + dataSet[results[i][0]][1]
+        data_set_image = highgui.openImage(image_path)
+        resized = np.zeros((0, 0))
+        scale = 0.125
+        resized = cv2.resize(src = data_set_image, dsize = (0, 0), dst = resized, fx = scale, fy = scale)
+
+        comparison = cv2.drawMatches(img1 = image, keypoints1 = results[i][2], img2 = resized, keypoints2 = results[i][3], matches1to2=results[i][4], outImg=None, flags = 2)
+        
         if i == 0:
-            cv2.imshow('Best match ->' + str(results[i][0]), results[i][2])
-            print('You are located in', dataSet[results[i][0]][1])
+            cv2.imshow('Best match ->' + str(results[i][0]), comparison)
+            print('Painting', image_path, 'with index', results[i][0], 'is estimated to be the painting.', 'You are located in', dataSet[results[i][0]][0])
         else:
-            cv2.imshow(str(results[i][0]), results[i][2])
-        print('Painting', results[i][0], 'Sum: of matches', results[i][1])
+            cv2.imshow(str(results[i][0]), comparison)
+        
+        print('\tPainting', results[i][0], 'Sum: of matches', results[i][1], end="")
