@@ -8,28 +8,13 @@ from Modules import contour
 
 def main():
     imagePath = optcheck.getArguments()[0]
-    image = highgui.openImage(imagePath)
+    image = highgui.loadImage(imagePath)
     paintingDetector = pd.PaintingDetector()
 
     # resize image since original has high resolution
     #monitor = screeninfo.get_monitors()[0]
     #image = highgui.resizeImage(image, (monitor.width >> 1, monitor.height >> 1)) # adjust width and height relative to base screen
-
-    # canny recommends an upper:lower ratio between 2:1 and 3:1
-    # IDEA: to determine threshold: start high and if no rectangle could be found, lower the thresholds
-    #image = paintingDetector.detectPainting(image, lowCannyThreshold = 50, cannyRatio = 3, houghThreshold = 75)
-    #highgui.showImage(imagePath, image)
-    #highgui.saveImage(image, highgui.getSavePath(imagePath, 'edges'))
-    localBinaryPattern = lbd.LocalBinaryPattern()
-    featureVector = localBinaryPattern.getFeatureVectorForImage(image, radius = 1)
-    highgui.showImage("name", featureVector)
-    classifier = SVC(gamma= 'auto')
-    #contour.contour(image, debug=True)
-
-
-
-    #gabor.segmentImage(image, True)
-  #  highgui.showImage(imagePath, segmentation)
+    paintingDetector.detectPainting(image)
 
 if __name__ == '__main__':
     main()

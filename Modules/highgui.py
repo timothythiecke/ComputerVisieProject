@@ -3,9 +3,9 @@ import os
 from Modules import colors
 
 
-def openImage(imagePath):
+def loadImage(imagePath):
     """
-    Opens and returns an image
+    Loads and returns an image
     Parameters
     ----------
         imagePath : string
