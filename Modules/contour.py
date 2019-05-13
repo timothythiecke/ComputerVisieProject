@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from Modules import colors
 
 def contour(image, imagepath = '', debug = False):
     """
@@ -16,14 +17,13 @@ def contour(image, imagepath = '', debug = False):
 
     # Resize and convert to grayscale
     image = cv2.resize(src = image, dsize = (0, 0), dst = None, fx = 0.25, fy = 0.25)
-    image = cv2.GaussianBlur(src = image, ksize = (5, 5), sigmaX = 1.0)
+    #image = cv2.GaussianBlur(src = image, ksize = (5, 5), sigmaX = 1.0)
 
     gray = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
 
     # Apply canny edge detector
-    thresh1 = 100
-
-    thresh2 = 10
+    thresh1 = 33
+    thresh2 = 100
     edges = cv2.Canny(image = gray, threshold1 = thresh1, threshold2 = thresh2)
     if debug:
         cv2.imshow(str(imagepath) + 'canny', edges)
@@ -35,9 +35,9 @@ def contour(image, imagepath = '', debug = False):
 
     # Find contours in image
     contours, hierarchy = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.drawContours(image, contours, -1, (0, 255, 0), 2)
-    
+     
     if debug:
+        cv2.drawContours(image, contours, -1, colors.GREEN, 2)
         cv2.imshow(str(imagepath), image)
         cv2.waitKey()
 
@@ -56,11 +56,10 @@ def contour(image, imagepath = '', debug = False):
     # TODO: handling additional polygons
     if box is None:
         print('Could not find bounding box of 4 points')
-        return 
-
-    cv2.drawContours(image, [box], -1, (0, 0, 255), 3)
+        return None
 
     if debug:
+        cv2.drawContours(image, [box], -1, colors.RED, 3)
         cv2.imshow(str(imagepath), image)
         cv2.waitKey()
     
@@ -154,4 +153,9 @@ def contour(image, imagepath = '', debug = False):
         print(bounding_box[2])
     
     # Crop out of original picture
-    cv2.imshow(str(imagepath) + 'crop', result[0:int(bounding_box[2][1]), 0:int(bounding_box[2][0])])
+    extracted = result[0:int(bounding_box[2][1]), 0:int(bounding_box[2][0])]
+    
+    if debug:
+        cv2.imshow(str(imagepath) + 'crop', extracted)
+
+    return extracted
