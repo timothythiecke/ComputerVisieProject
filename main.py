@@ -2,19 +2,19 @@ import screeninfo
 import numpy
 from sklearn.svm import SVC
 from Modules import optcheck, highgui, imgproc
-from Modules import PaintingDetector as pd
-from Modules import LocalBinaryPattern as lbd
-from Modules import contour
+from Modules import contour, dataset, matching
+from Modules import GroundPlan
+from Modules import Validator
 
 def main():
     imagePath = optcheck.getArguments()[0]
-    image = highgui.loadImage(imagePath)
-    paintingDetector = pd.PaintingDetector()
+    image = highgui.loadImage(imagePath)    
+#def match(image, dataSet, topMatchesCount = 5, debug = False):
+   # d = dataset.get()
+    #matching.match(image = image, dataSet = d)
+    validator = Validator.Validator()
+    validator.validate()
 
-    # resize image since original has high resolution
-    #monitor = screeninfo.get_monitors()[0]
-    #image = highgui.resizeImage(image, (monitor.width >> 1, monitor.height >> 1)) # adjust width and height relative to base screen
-    paintingDetector.detectPainting(image)
 
 if __name__ == '__main__':
     main()

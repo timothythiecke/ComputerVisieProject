@@ -4,8 +4,9 @@ import numpy as np
 import os
 
 from Modules import optcheck, highgui, imgproc, contour
-from Modules import PaintingDetector as pd
 from matplotlib import pyplot as plt
+
+
 
 def match(image, dataSet, topMatchesCount = 5, debug = False):
     """
@@ -64,7 +65,7 @@ def match(image, dataSet, topMatchesCount = 5, debug = False):
     # Show the best results
     for i in range(topMatchesCount):
         image_path = './Images/DataSet/' + dataSet[results[i][0]][0] + '/' + dataSet[results[i][0]][1]
-        data_set_image = highgui.openImage(image_path)
+        data_set_image = highgui.loadImage(image_path)
         resized = np.zeros((0, 0))
         scale = 0.125
         resized = cv2.resize(src = data_set_image, dsize = (0, 0), dst = resized, fx = scale, fy = scale)

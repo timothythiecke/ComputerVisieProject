@@ -47,7 +47,7 @@ def buildDataSet(debug = False):
 
             rel_path = './Images/DataSet/' + d + '/' + filename
             
-            image = highgui.openImage(rel_path)
+            image = highgui.loadImage(rel_path)
             image = cv2.resize(src = image, dsize = (0, 0), dst = None, fx = 0.125, fy = 0.125) # TODO: parameter? should be equivalent to resize factor for contour extraction
             
             kp_d, desc_d = orb.detectAndCompute(image, None)

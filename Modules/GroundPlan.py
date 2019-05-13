@@ -1,5 +1,7 @@
 class GroundPlan(object):
     def __init__(self):
+        self.nodes = ['I', 'II', 'III', 'IV', 'V', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S' 
+        ]
         self.adjacencyList = {
             'I' : ['II'],
             'II' : ['I', '1', '5',' 6', 'A', 'E', 'F', 'III'],
@@ -45,50 +47,7 @@ class GroundPlan(object):
             'R' : ['P', 'Q', 'S'],
             'S' : ['P', 'Q', 'R', 'L', '12', '19'],
         }
-        self.visitedList = {
-            'I' : False,
-            'II' : False,
-            'III' : False,
-            'IV' : False,
-            'V' : False,
-            '1' : False,
-            '2' : False,
-            '3' : False,
-            '4' : False,
-            '5' : False,
-            '6' : False,
-            '7' : False,
-            '8' : False,
-            '9' : False,
-            '10' : False,
-            '11' : False,
-            '12' : False,
-            '13' : False,
-            '14' : False,
-            '15' : False,
-            '16' : False,
-            '17' : False,
-            '18' : False,
-            '19' : False,
-            'A' : False,
-            'B' : False,
-            'C' : False,
-            'D' : False,
-            'E' : False,
-            'F' : False,
-            'G' : False,
-            'H' : False,
-            'J' : False,
-            'K' : False,
-            'L' : False,
-            'M' : False,
-            'N' : False,
-            'O' : False,
-            'P' : False,
-            'Q' : False,
-            'R' : False,
-            'S' : False
-        }
+        self.visitedList = {node: False for node in self.nodes}
 
     def visualize(self):
         """
