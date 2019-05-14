@@ -1,5 +1,10 @@
-digraph G {V[fillcolor=red, style=filled]
-4[fillcolor=red, style=filled]
+digraph G {1 -> 2[color=green]
+2 -> 4[color=green]
+4 -> 5[color=green]
+1[fillcolor=green, style=filled]
+2[fillcolor=orange, style=filled]
+4[fillcolor=orange, style=filled]
+5[fillcolor=blue, style=filled]
 I -> F
 I -> G
 I -> J
@@ -22,17 +27,14 @@ IV -> S
 IV -> 19
 V -> S
 V -> 19
-1 -> 2
 1 -> II
 2 -> 1
 2 -> 3
-2 -> 4
 2 -> 5
 3 -> 2
 3 -> 4
 4 -> 2
 4 -> 3
-4 -> 5
 4 -> 7
 4 -> 8
 5 -> 2
@@ -54,7 +56,7 @@ V -> 19
 9 -> 7
 9 -> 10
 10 -> 9
-10 -> 10
+10 -> 11
 11 -> 10
 11 -> 12
 12 -> 11
@@ -84,6 +86,7 @@ V -> 19
 19 -> 18
 19 -> S
 19 -> L
+19 -> V
 A -> B
 A -> II
 B -> A

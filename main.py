@@ -2,19 +2,15 @@ import screeninfo
 import numpy
 from sklearn.svm import SVC
 from Modules import optcheck, highgui, imgproc
-from Modules import contour, dataset, matching
-from Modules import GroundPlan
-from Modules import Validator
+from Modules import contour, GroundPlan
 
 def main():
-    imagePath = optcheck.getArguments()[0]
-    image = highgui.loadImage(imagePath)    
-#def match(image, dataSet, topMatchesCount = 5, debug = False):
-   # d = dataset.get()
-    #matching.match(image = image, dataSet = d)
-    validator = Validator.Validator()
-    validator.validate()
-
+    groundPlan = GroundPlan.GroundPlan()
+    groundPlan.markVisited('1')
+    groundPlan.markVisited('2')
+    groundPlan.markVisited('4')
+    groundPlan.markVisited('5')
+    groundPlan.visualize()
 
 if __name__ == '__main__':
     main()
