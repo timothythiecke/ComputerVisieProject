@@ -2,6 +2,8 @@ import cv2
 import numpy
 import os
 from Modules import optcheck, highgui, imgproc
+import pickle
+from pathlib import Path
 
 #shadow_box.png
 imagePath = optcheck.getArguments()[0]
@@ -33,6 +35,25 @@ def onMouse(event, x, y, flags, userdata):
             print(f" ({point[0]}, {point[1]}) ", end='')
         print("\n")
         cv2.imwrite(highgui.getSavePath(imagePath, 'e'), image)
+
+        out = [imagePath, src[0], src[1], src[2], src[3]]
+        config = Path('GT.txt')
+        if config.is_file() == False:
+            config.touch()
+
+            with open('GT.txt', 'wb') as f:
+                pickle.dump(out, f)
+        else:
+            pickled = []
+            with open('GT.txt', 'rb') as f:   
+                pickled = pickle.load(f)
+        
+            pickled.append(out)
+
+            with open('GT.txt', 'wb') as f:
+                pickle.dump(pickled, f)
+
+            #print(pickled)
 
 
 mouseClicks = 0 
