@@ -1,18 +1,19 @@
+class Adjacany(object):
+    def __init__(self, fromRoom, toRoom):
+        self.fromRoom = fromRoom
+        self.toRoom = toRoom
+        self.color = "black"
+
 class Room(object):
     def __init__(self, mark):
         self.mark = mark
-        self.adjacencyList = []
         self.visitedIndex = -1
-    
-    def appendToAdjacanyList(self, node):
-        self.adjacencyList.append(node)
-
 
 class GroundPlan(object):
     nodes = ['I', 'II', 'III', 'IV', 'V', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S' ]
-    adjacencyList = {
+    adjacencies = {
             'I' : ['II'],
-            'II' : ['I', '1', '5',' 6', 'A', 'E', 'F', 'III'],
+            'II' : ['I', '1', '5','6', 'A', 'E', 'F', 'III'],
             'III' : ['II', 'IV', 'L', '12'],
             'IV' : ['III', 'L', '12', 'S', '19'],
             'V' : ['S', '19'],
@@ -57,9 +58,15 @@ class GroundPlan(object):
         }
     def __init__(self):
         self.rooms = [Room(node) for node in GroundPlan.nodes]
+        self.adjacencyList = []
         for room in self.rooms:
-            for neighbour in GroundPlan.adjacencyList[room.mark]:
-                room.appendToAdjacanyList(neighbour)
+            for neighbour in GroundPlan.adjacencies[room.mark]:
+                neighbourRoom = next(r for r in self.rooms if r.mark == neighbour)
+                self.adjacencyList.append(Adjacany(room, neighbourRoom))
+        
+        #for room in self.rooms:
+        #    for neighbour in GroundPlan.adjacencyList[room.mark]:
+        #        room.appendToAdjacanyList(neighbour)
         self.maxVisitedIndex = 0 # keeps the maximum amount of visited rooms, this is used to determine the intermediate and end node
         self.previousRoom = Room('-') # keeps information of the previous room, is needed for transitions
         self.roomTransitions = [] # keeps information of room transitions
@@ -73,20 +80,17 @@ class GroundPlan(object):
         
         output = "digraph G {"
         
-        for i in range(1, len(self.roomTransitions)):
-            output += f"{self.roomTransitions[i][0]} -> {self.roomTransitions[i][1]}[color=green]\n"
-
         for room in self.rooms:
-            if(room.visitedIndex == 1):
+            if(room.visitedIndex == 1): # the node is the starting node
                 output += f"{room.mark}[fillcolor=green, style=filled]\n"
-            elif(room.visitedIndex > 1 and room.visitedIndex < self.maxVisitedIndex):
+            elif(room.visitedIndex > 1 and room.visitedIndex < self.maxVisitedIndex): # the node is an intermediate node
                 output += f"{room.mark}[fillcolor=orange, style=filled]\n"
-            elif(room.visitedIndex == self.maxVisitedIndex):
+            elif(room.visitedIndex == self.maxVisitedIndex): # the node is the ending node
                 output += f"{room.mark}[fillcolor=blue, style=filled]\n"
 
-        for room in self.rooms:
-            for neighbour in room.adjacencyList:
-                output += f"{room.mark} -> {neighbour}\n"
+
+        for adjacany in self.adjacencyList:
+            output += f"{adjacany.fromRoom.mark} -> {adjacany.toRoom.mark}[color={adjacany.color}]\n"
 
         output += "}"
         F = open("groundplan.dot", "w")
@@ -94,11 +98,15 @@ class GroundPlan(object):
         F.close()
 
     def markVisited(self, mark):
+        """
+        Marks a node as visited. It also keeps track of transitions between nodes.
+        """
         self.maxVisitedIndex += 1
         for room in self.rooms:
             if(room.mark == mark):
                 room.visitedIndex = self.maxVisitedIndex
                 self.roomTransitions.append([self.previousRoom.mark, room.mark])
-                if(len(self.previousRoom.adjacencyList) > 0): # slechte methode, verwijdert de oude verbinding om dubbele lijn in graphviz te voorkomen
-                    self.previousRoom.adjacencyList.remove(room.mark)
+                if(self.previousRoom.mark is not '-'):
+                    adjacany = next(adj for adj in self.adjacencyList if adj.fromRoom == self.previousRoom and adj.toRoom == room)
+                    adjacany.color = "green"
                 self.previousRoom = room
