@@ -15,6 +15,7 @@ def saveImage(image, savePath):
     cv2.imwrite(savePath, image)
 
 def getSavePath(defaultPath, exNumber):
-    filepath, filename = os.path.split(defaultPath)
-    filename, extension = filename.split(".")
-    return f"{filepath}\\{filename}EX{exNumber}.{extension}"
+    #print(defaultPath, exNumber)
+    #filepath, filename = os.path.split(defaultPath)
+    filename, extension = defaultPath.split(".")
+    return f"{filename}EX{exNumber}.{extension}"
