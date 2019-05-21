@@ -1,51 +1,37 @@
 import screeninfo
 import numpy
-from sklearn.svm import SVC
-from Modules import optcheck, highgui, imgproc
-from Modules import contour, GroundPlan
+import cv2
+import numpy as np
+from Modules.Dataset import DataSet
+from Modules.GroundPlan import GroundPlan
+from Modules.Contour import contour, drawOnVideoFrame
+from concurrent.futures import ThreadPoolExecutor
+from Modules import optcheck, highgui, imgproc, matching
 
 def main():
-    groundPlan = GroundPlan.GroundPlan()
-    groundPlan.markVisited('1')
-    groundPlan.markVisited('2')
-    groundPlan.markVisited('4')
-    groundPlan.markVisited('5')
-    groundPlan.visualize()
-
-    # Video code
     videoPath = optcheck.getArguments()[0]
-
-    # Get the dataset from disk
-    data_set = dataset.get(resetPersistence = False)
-    
-    # Video code
-    capture = cv2.VideoCapture(videoPath) # Use command line argument as above
-    i = 0
-    frame_index = 0
-    thread_i = 0
-
-    groundPlan = GroundPlan.GroundPlan()
-
+    dataSet = DataSet.getDataSet()
+    groundPlan = GroundPlan()
+    #paintingFinder = PaintingFinder()
+    capture = cv2.VideoCapture(videoPath)
     executor = ThreadPoolExecutor(max_workers=32)
-    while (capture.isOpened()):
-        ret, frame = capture.read()
 
-        extracted = contour.contour(image = frame, scale = 0.5, imagepath = 'extracted', showExtracted = True)
-        if i == 30: # Every 30 frames, a new matching procedure is started, we let the executor handle threading for us
-            f = executor.submit(matching.match, np.copy(extracted), data_set, 1, False, frame_index, groundPlan)
-        
-        i += 1
-        frame_index += 1
-        frame = contour.drawOnVideoFrame(frame = frame, scale = 0.5)     
+    (frameCount, frameIndex) = [0] * 2
+    
+    while(capture.isOpened()):
+        frame = capture.read()[1] # discard the 'succeeded' variable
+        extracted = contour(image = frame, scale = 0.5, imagepath = 'extracted', showExtracted = True)
+        if frameCount == 30:
+            executor.submit(matching.match, np.copy(extracted), dataSet, 1, False, frameIndex, groundPlan)
+            frameCount = 0
 
-        cv2.imshow('movie', frame)
+        frameCount += 1
+        frameIndex += 1
+        frame = drawOnVideoFrame(frame = frame, scale = 0.5)
+        cv2.imshow("movie", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    
     capture.release()
-
-    groundPlan.visualize()    
-
     cv2.waitKey()
     cv2.destroyAllWindows()
 

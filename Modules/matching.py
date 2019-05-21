@@ -3,7 +3,7 @@ import screeninfo
 import numpy as np
 import os
 import random
-from Modules import optcheck, highgui, imgproc, contour
+from Modules import optcheck, highgui, imgproc
 
 def match(image, dataSet, topMatchesCount = 5, debug = False, frameIndex = -1, groundPlan = None):
     """
