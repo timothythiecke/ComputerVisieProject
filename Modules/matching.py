@@ -3,9 +3,10 @@ import screeninfo
 import numpy as np
 import os
 import random
+import threading
 from Modules import optcheck, highgui, imgproc, contour
 
-def match(image, dataSet, topMatchesCount = 5, debug = False, frameIndex = -1, groundPlan = None):
+def match(image, dataSet, topMatchesCount = 5, frameIndex = -1, groundPlanQueue = None, debug = False):
     """
     Tries to match the given image with an image in the dataset.
     The function shows the 5 most likely matches.
@@ -16,7 +17,11 @@ def match(image, dataSet, topMatchesCount = 5, debug = False, frameIndex = -1, g
         dataSet
             THE dataset
         topMatchesCount
-            The top amount of matches to show
+            The top amount of matches to show. Will default to 1 when dealing with video frames.
+        frameIndex
+            Current frame being matched with. -1 when dealing with pictures, >-1 when dealing with video frames.
+        groundPlanQueue
+            Put result of matching on this queue. Another thread will deal with this information. None when dealing with pictures, a queue object when dealing with video frames.
         debug
             If set to true, the program will print additional information and open windows
     """
@@ -39,9 +44,6 @@ def match(image, dataSet, topMatchesCount = 5, debug = False, frameIndex = -1, g
         desc_d = data_set_tuple[3]
         matches = bf.match(desc_result, desc_d)
         matches = sorted(matches, key = lambda x:x.distance)
-
-        #print(len(kp_d), len(desc_d))
-        #cv2.waitKey()
 
         matches_to_use = 20
         matches = matches[:matches_to_use]        
@@ -67,33 +69,32 @@ def match(image, dataSet, topMatchesCount = 5, debug = False, frameIndex = -1, g
     results = sorted(results, key = lambda x:x[1])
 
     # Show the best results
+    # Note: showing the best results does not work well with videoframes/multithreading
+    if groundPlanQueue is not None:
+        if frameIndex > -1:
+            topMatchesCount = 1
+
     for i in range(topMatchesCount):
+        best_frame = 'Best match frame ' + str(frameIndex) + ' top' + str(i)
         image_path = './Images/DataSet/' + dataSet[results[i][0]][0] + '/' + dataSet[results[i][0]][1]
         data_set_image = highgui.loadImage(image_path)
         resized = np.zeros((0, 0))
         scale = 0.125
         resized = cv2.resize(src = data_set_image, dsize = (0, 0), dst = resized, fx = scale, fy = scale)
-        #cv2.imshow('Best match', resized)
 
+        # Generate comparison image between extracted and dataset    
         comparison = cv2.drawMatches(img1 = image, keypoints1 = results[i][2], img2 = resized, keypoints2 = results[i][3], matches1to2=results[i][4], outImg=None, flags = 2)
+        cv2.imshow(best_frame, comparison)
         
-        if i == 0:
-            cv2.imshow('Best match frame ' + str(frameIndex), comparison)
-            #cv2.imshow('Best match', comparison)
-            print('Painting', image_path, 'with index', results[i][0], 'is estimated to be the painting.', 'You are located in', dataSet[results[i][0]][0])
-            #cv2.waitKey(1000)
-            if groundPlan is not None:
-                zaal = dataSet[results[i][0]][0].split('_')[1]   
-                groundPlan.markVisited(zaal)
+        # Put the meta data on the queue so the groundPlanConsumer can process it
+        print('Painting', image_path, 'with index', results[i][0], 'is estimated to be the painting.', 'You are located in', dataSet[results[i][0]][0])
+        if groundPlanQueue is not None:
+            zaal = dataSet[results[i][0]][0].split('_')[1]
+            groundPlanQueue.put(zaal, block = False)
 
+        # Show the match for a while on screen, then destroy the window
+        if frameIndex != -1:
             cv2.waitKey(3000)
-        else:
-            #print('')
-            cv2.imshow(str(i + 1) + 'nd best match', comparison)
-        
-        if debug:
-            print('\tPainting', results[i][0], 'Sum: of matches', results[i][1], end="")
+            cv2.destroyWindow(best_frame)
 
-    cv2.destroyWindow('Best match frame ' + str(frameIndex))
-    #cv2.destroyWindow('Best match')
-    #return 1
+# Thread will stop here
