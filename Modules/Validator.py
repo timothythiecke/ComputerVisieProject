@@ -1,5 +1,6 @@
 import csv
 import pickle
+import matplotlib.pyplot as plt
 from Contour import PaintingFinder
 import highgui, imgproc, colors
 import numpy as np
@@ -30,7 +31,9 @@ class Validator(object):
 
     def validate(self):
         paintingFinder = PaintingFinder()
-        for i in range(0, 1):#range(0, len(self.images)):
+
+        percentages = []
+        for i in range(0, len(self.images)):
             imageName = self.images[i]
             print(f"{PATH}/{imageName}")
             
@@ -50,18 +53,14 @@ class Validator(object):
                 predictedPoints.append((polygon[j][0][0], polygon[j][0][1]))
                 groundTruthPoints.append((self.groundTruth[i][j][0], self.groundTruth[i][j][1]))
         
-            # for visual purposes
-            for j in range(0, 4):
-                cv2.line(img = image, pt1 = (predictedPoints[j%4][0], predictedPoints[j%4][1]), pt2 = (predictedPoints[(j + 1) % 4][0], predictedPoints[(j + 1) % 4][1]),color=colors.GREEN, thickness= 10)
-                cv2.line(img = image, pt1 = (groundTruthPoints[j%4][0], groundTruthPoints[j%4][1]), pt2 = (groundTruthPoints[(j + 1) % 4][0], groundTruthPoints[(j + 1) % 4][1]),color=colors.RED, thickness = 10)
-            #highgui.showImage("canvas", image)
-
 
             groundTruthInContourFormat = np.ndarray(shape=(4, 1, 2), dtype=np.int32)
             for i in range(0, len(groundTruthPoints)):
                 groundTruthInContourFormat[i][0][0] = groundTruthPoints[i][0]
                 groundTruthInContourFormat[i][0][1] = groundTruthPoints[i][1]
        
+            cv2.drawContours(image, [polygon], -1, colors.GREEN, 3)
+            cv2.drawContours(image, [groundTruthInContourFormat], -1, colors.RED, 3)
 
             areaPrediction = 0
             areaGroundTruth = 0
@@ -73,8 +72,18 @@ class Validator(object):
 
                     areaPrediction += pointIsInPrediction == True
                     areaGroundTruth += pointIsInGroundTruth == True
-                    areaPrediction += (pointIsInPrediction == True and pointIsInGroundTruth == True)
+                    areaIntersection += (pointIsInPrediction == True and pointIsInGroundTruth == True)
+            try:
+                ratio = areaIntersection / (areaGroundTruth / 100)
+            except:
+                ratio = 0
+                print("no intersection")
+            print(areaPrediction, areaGroundTruth, areaIntersection, ":", ratio , "% match")
+            percentages.append(ratio)
+           # highgui.showImage("canvas", image)
+        
+        print(sum(percentages) / len(percentages))
 
-            print(areaPrediction, areaGroundTruth, areaIntersection)
+            
 val =  Validator()
 val.validate()
