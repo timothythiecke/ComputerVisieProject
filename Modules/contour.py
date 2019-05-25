@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-from Modules import colors, highgui, imgproc
+import colors, highgui, imgproc
+#from Modules import colors, highgui, imgproc
 
 
 class PaintingFinder(object):

@@ -4,13 +4,39 @@
 \usepackage{graphicx}
 \usepackage{hyperref} 
 
+
+%flowchart DOT code
+%digraph G {
+%	rankdir=LR
+%	node [shape = rectangle]
+	
+%	a[label="Input video"]
+%	b[label="Painting segmentation\n with bounding box"]
+%	c[label="Painting transformation\n to standard format"]
+%	d[label="Feature detection\n using brute force\n ORB matcher"]
+%	e[label="Comparing feature vector\n against other paintings in dataset"]
+%	f[label="Plot location of painting on ground plan"]
+%	
+%	a -> b [label="frames"]
+%	b -> c [label="segmented painting"]
+%	c -> d [label="painting in\n standard format"]
+%	d -> e [label="feature vector"]
+%	e -> f [label="match result"]
+%	
+%	{rank=same; a d}
+%	{rank=same; b e}
+%	{rank=same; c f}
+%}
+
+
 \newcommand{\todo}[1]{\color{red}\_ToDo: #1 \color{black}}
 \graphicspath{{./img/}}
-\title{Room localisation in the Museum of Fine Arts in Ghent using painting recognition}
+\title{Continuous room localisation using painting detection}
 \author{Bert De Saffel, Timothy Thiecke}
 \begin{document}
 	\maketitle
 	\begin{abstract}
+		
 		This paper describes our method to localise a painting on a ground plan based on The Musem of Fine Arts in Ghent. 
 	\end{abstract}
 
@@ -62,7 +88,9 @@
 	\todo{gebruik ook afbeeldingen}
 	
 	\subsection{Painting Segmentation}
-	Before a painting can be matched against the database it must first be recognized in an arbitrary frame. 
+	The first step of the algorithm is the segmentation of a painting in an arbitrary video frame. A typical painting contains the art on its own enclosed by a painting frame. This painting frame causes a strong change in environment, increasing the effectiveness of an edge detector. Extracting the edges with the Canny edge detector yields a first indication of where a painting might be. If the full painting frame is visible on the video frame, its contour can be calculated using \cite{SUZUKI198532} which returns a vector of points for each contour. We consider only contours which have four points.
+	
+	It is possible that multiple paintings exist on a single frame, 
 	
 	\subsection{Feature Detection}
 	

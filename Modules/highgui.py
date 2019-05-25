@@ -1,6 +1,6 @@
 import cv2
 import os
-from Modules import colors
+import colors
 
 
 def loadImage(imagePath):

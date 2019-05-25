@@ -16,13 +16,13 @@ def main():
     capture = cv2.VideoCapture(videoPath)
     executor = ThreadPoolExecutor(max_workers=32)
 
-    (frameCount, frameIndex) = [0] * 2
+    (frameCount, frameIndex) = [0] * 2 # initialize both values to zero
     
     while(capture.isOpened()):
         frame = capture.read()[1] # discard the 'succeeded' variable
         extracted = contour(image = frame, scale = 0.5, imagepath = 'extracted', showExtracted = True)
         if frameCount == 30:
-            executor.submit(matching.match, np.copy(extracted), dataSet, 1, False, frameIndex, groundPlan)
+            executor.submit(matching.match, np.copy(extracted), dataSet, 1, False, frameIndex, groundPlan, False)
             frameCount = 0
 
         frameCount += 1
@@ -32,6 +32,10 @@ def main():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     capture.release()
+    q.put('q') # in order to stop the groundplan consumer, threads can't be stopped externally
+
+    groundPlan.visualize()    
+
     cv2.waitKey()
     cv2.destroyAllWindows()
 
