@@ -1,3 +1,5 @@
+import queue
+
 class Adjacany(object):
     def __init__(self, fromRoom, toRoom):
         self.fromRoom = fromRoom
@@ -107,6 +109,24 @@ class GroundPlan(object):
                 room.visitedIndex = self.maxVisitedIndex
                 self.roomTransitions.append([self.previousRoom.mark, room.mark])
                 if(self.previousRoom.mark is not '-'):
-                    adjacany = next(adj for adj in self.adjacencyList if adj.fromRoom == self.previousRoom and adj.toRoom == room)
-                    adjacany.color = "green"
+                    try:
+                        adjacany = next(adj for adj in self.adjacencyList if adj.fromRoom == self.previousRoom and adj.toRoom == room)
+                        adjacany.color = "green"
+                    except:
+                        print('markVisited exception') # TODO: needs better message or no op
                 self.previousRoom = room
+
+
+
+def groundPlanMessageConsumer(groundPlan = None, queue = None):
+    if groundPlan is not None and queue is not None:
+        while(1):
+            zaal = queue.get()
+            print(zaal)
+            if zaal == 'q':
+                break
+            else:
+                try:
+                    groundPlan.markVisited(zaal)
+                except:
+                    print('GroundPlan.markVisited threw an exception')
