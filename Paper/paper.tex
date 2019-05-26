@@ -31,13 +31,13 @@
 
 \newcommand{\todo}[1]{\color{red}\_ToDo: #1 \color{black}}
 \graphicspath{{./img/}}
-\title{Continuous room localisation using painting detection}
+\title{Continuous room localization using painting detection}
 \author{Bert De Saffel, Timothy Thiecke}
 \begin{document}
 	\maketitle
 	\begin{abstract}
 		
-		This paper describes our method to localise a painting on a ground plan based on The Musem of Fine Arts in Ghent. 
+		This paper describes our method to localize a painting on a ground plan based on The Museum of Fine Arts in Ghent. 
 	\end{abstract}
 
 
@@ -88,15 +88,17 @@
 	\todo{gebruik ook afbeeldingen}
 	
 	\subsection{Painting Segmentation}
-	The first step of the algorithm is the segmentation of a painting in an arbitrary video frame. A typical painting contains the art on its own enclosed by a painting frame. This painting frame causes a strong change in environment, increasing the effectiveness of an edge detector. Extracting the edges with the Canny edge detector yields a first indication of where a painting might be. If the full painting frame is visible on the video frame, its contour can be calculated using \cite{SUZUKI198532} which returns a vector of points for each contour. We consider only contours which have four points.
+	The first step of the algorithm is the segmentation of an arbitrary video frame to detect a painting. A typical painting contains the art on its own enclosed by a painting frame. This painting frame causes a strong change in environment, increasing the effectiveness of an edge detector. Extracting the edges with the Canny edge detector yields a first indication of where a painting might be. If the full painting frame is visible on the video frame, its contour can be calculated using \cite{SUZUKI198532} which returns a vector of points for each contour. We consider only contours which have four points.
 	
-	It is possible that multiple paintings exist on a single frame, 
+	It is possible that multiple paintings exist on a single frame. However, the algorithm's goal is to detect in which room the user is located. Multiple paintings on the same wall belong to the same room. Hence, the algorithm will try the matching procedure in a later phase on one detected painting with the largest surface area. The remaining paintings are ignored but may be the result of the segmentation step in any of the following video frames.
+	
+	The detected painting is then transformed through a homography to a rectified version which serves as the input of the following stage.
 	
 	\subsection{Feature Detection}
 	
 	
 	\subsection{Path Tracking}
-	Once a painting is identified and matched, it can be localised on the ground plan. To achieve this, the ground plan is converted into a directed graph. The nodes of this graph are the rooms of the museum and the edges define the connections between rooms. When a user starts recording paintings, the matching algorithm will be performed on each frame and a location will be found. The graph is able to mark nodes in three distinct ways. A green node is the start of the path, an orange node is an intermediate path and the blue node is the end of the path. The path ends when the user stops recording. The path direction is also visualised by coloring the corresponding edges green. Note that when a cyclic path occurs which was walked in both directions, information of order is lost.
+	Once a painting is identified and matched, it can be localized on the ground plan. To achieve this, the ground plan is converted into a directed graph. The nodes of this graph are the rooms of the museum and the edges define the connections between rooms. When a user starts recording paintings, the matching algorithm will be performed on each frame and a location will be found. The graph is able to mark nodes in three distinct ways. A green node is the start of the path, an orange node is an intermediate path and the blue node is the end of the path. The path ends when the user stops recording. The path direction is also visualized by coloring the corresponding edges green. Note that when a cyclic path occurs which was walked in both directions, information of order is lost.
 	
 	
 	
@@ -130,22 +132,22 @@
 
 	\begin{figure}
 		\includegraphics[width=\linewidth]{groundplan_msk_simple_graph}
-		\caption{Path tracking using a graph. }
+		\caption{Path tracking using a graph. The green marks the path's start, orange nodes the visited rooms, and blue the last one visited. Edges in green denote help visualize the path.}
 		\label{fig:groundplan_msk_simple_graph}
 	\end{figure}
 	
 	\subsection{Database}
-	The database consists of 688 images of various paintings and sculptures in the museum. In this work we only focus on the paintings of this dataset. The paintings were extracted from two different camera's: a Nokia 7 plus and a Samsung A3. Each image also contains the room in which it resides as metadata.  
+	The database consists of 688 images of various paintings and sculptures in the museum. In this work we only focus on the paintings of this dataset. The paintings were extracted from two different camera's: a Nokia 7 plus and a Samsung A3. Each image also contains the room in which it resides as meta-data.  
 	
 	To reduce the load time of this database, a prebuilding stage was implemented. This stage reduces each image to a collection of interest points and corresponding descriptors for these interest points as generated by the ORB \cite{Rublee2011} algorithm. 
 	
 	
 	\section{Evaluation}
-	To measure the performance metrics of our algorithm, we employ three different methods: for painting segmentation, the matching algorithm and room localisation consistency. First, an evaulation of painting segmentation is done using a random sample of the dataset. In this sample, each painting is segmentated manually, resulting in four coördinates for each image. These coördinates can be compared against the coördinates that are generated by the painting segmentation algorithm. A distance metric is used to compare the closeness of two coördinates.
+	To measure the performance metrics of our algorithm, we employ three different methods: for painting segmentation, the matching algorithm and room localization consistency. First, an evaluation of painting segmentation is done using a random sample of the dataset. In this sample, each painting is segmented manually, resulting in four coordinates for each image. These coordinates can be compared against the coordinates that are generated by the painting segmentation algorithm. A distance metric is used to compare the closeness of two coordinates.
 	
 	The matching algorithm has to be evaluated manually by comparing the matcher's result. The correctness of the matching algorithm is simply the ratio of the correct matches against the false matches.
 	
-	To evaluate the room localisation, a sample of the video dataset was taken. The generated path is compared against the actaul path.
+	To evaluate the room localization, a sample of the video dataset was taken. The generated path is compared against the actual path.
 	
 	
 	
