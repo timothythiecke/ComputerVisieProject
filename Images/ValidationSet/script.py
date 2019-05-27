@@ -40,9 +40,10 @@ def onMouse(event, x, y, flags, userdata):
         config = Path('GT.txt')
         if config.is_file() == False:
             config.touch()
-
+            pickled = []
+            pickled.append(out)
             with open('GT.txt', 'wb') as f:
-                pickle.dump(out, f)
+                pickle.dump(pickled, f)
         else:
             pickled = []
             with open('GT.txt', 'rb') as f:   

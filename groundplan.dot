@@ -1,4 +1,5 @@
-digraph G {5[fillcolor=green, style=filled]
+digraph G {1[fillcolor=orange, style=filled]
+P[fillcolor=blue, style=filled]
 I -> F[color=black]
 I -> G[color=black]
 I -> J[color=black]
