@@ -126,9 +126,9 @@ class PaintingFinder(object):
     @classmethod
     def findPainting(self, image):
 
-        contours = self._findContours(image = image)
-        polygon = self._findPaintingPolygon(image = image, contours = contours)
-        self._transformPainting(image = image, polygon = polygon)
+        contours = self._findContours(image=image)
+        polygon = self._findPaintingPolygon(image=image, contours=contours)
+        self._transformPainting(image=image, polygon=polygon)
 
     @classmethod
     def _findContours(self, image):
@@ -142,15 +142,17 @@ class PaintingFinder(object):
         ----------
             A list of contours
         """
-        image = cv2.resize(src = image, dsize = (0, 0), dst = None, fx = 0.5, fy = 0.5)
-        grayscaleImage = imgproc.convertToGrayscale(src = image)
+        image = cv2.resize(src=image, dsize=(0, 0), dst=None, fx=0.5, fy=0.5)
+        grayscaleImage = imgproc.convertToGrayscale(src=image)
         
-        (thresh1, thresh2) = (33, 100)
-        edges = cv2.Canny(image = grayscaleImage, threshold1 = thresh1, threshold2 = thresh2)
-        dilatedImage = cv2.dilate(src = edges, kernel = np.array([[1,1,1],[1,1,1],[1,1,1]]))
-
+        (thresh1, thresh2) = (50, 150)
+        #highgui.showImage("paper", grayscaleImage)
+        edges = cv2.Canny(image=grayscaleImage, threshold1=thresh1, threshold2=thresh2)
+        #highgui.showImage("paper", edges)
+        dilatedImage = cv2.dilate(src=edges, kernel=np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]]))
+        #highgui.showImage("paper", dilatedImage)
         contours, hierarchy = cv2.findContours(dilatedImage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        contours = sorted(contours, key = cv2.contourArea, reverse = True)[:10]
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
         return contours
 
     @classmethod

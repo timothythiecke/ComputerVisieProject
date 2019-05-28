@@ -41,10 +41,10 @@ class Evaluator(object):
             imageName = self.images[i]
             print(f"{PATH}/{imageName}")
             
-            image = highgui.loadImage(imagePath = f"{PATH}/{imageName}")
-            image = highgui.resizeImage(image = image, dimension = (1000, 1000))
-            contours = paintingFinder._findContours(image = image)
-            polygon = paintingFinder._findPaintingPolygon(image = image, contours = contours)
+            image = highgui.loadImage(imagePath=f"{PATH}/{imageName}")
+            image = highgui.resizeImage(image=image, dimension=(1000, 1000))
+            contours = paintingFinder._findContours(image=image)
+            polygon = paintingFinder._findPaintingPolygon(image=image, contours=contours)
             if polygon is None:
                 continue  # to next picture
          
@@ -52,12 +52,10 @@ class Evaluator(object):
             groundTruthPoints = []
             predictedPoints = []
 
-            
             for j in range(0, 4):
-                predictedPoints.append((polygon[j][0][0], polygon[j][0][1]))
+                predictedPoints.append((polygon[j][0], polygon[j][1]))
                 groundTruthPoints.append((self.groundTruth[i][j][0], self.groundTruth[i][j][1]))
         
-
             groundTruthInContourFormat = np.ndarray(shape=(4, 1, 2), dtype=np.int32)
             for i in range(0, len(groundTruthPoints)):
                 groundTruthInContourFormat[i][0][0] = groundTruthPoints[i][0]
@@ -71,12 +69,12 @@ class Evaluator(object):
             areaIntersection = 0
             for x in range(0, 1000):
                 for y in (range(0, 1000)):
-                    pointIsInPrediction = cv2.pointPolygonTest(contour = polygon, pt = (x, y), measureDist = False) > 0
-                    pointIsInGroundTruth = cv2.pointPolygonTest(contour = groundTruthInContourFormat, pt = (x, y), measureDist = False) > 0
+                    pointIsInPrediction = cv2.pointPolygonTest(contour=polygon, pt=(x, y), measureDist=False) > 0
+                    pointIsInGroundTruth = cv2.pointPolygonTest(contour=groundTruthInContourFormat, pt=(x, y), measureDist=False) > 0
 
-                    areaPrediction += pointIsInPrediction == True
-                    areaGroundTruth += pointIsInGroundTruth == True
-                    areaIntersection += (pointIsInPrediction == True and pointIsInGroundTruth == True)
+                    areaPrediction += pointIsInPrediction is True
+                    areaGroundTruth += pointIsInGroundTruth is True
+                    areaIntersection += (pointIsInPrediction is True and pointIsInGroundTruth is True)
 
             try:
                 
@@ -117,4 +115,4 @@ class Evaluator(object):
 
             
 evaluator =  Evaluator()
-evaluator.evaluteMatching()
+evaluator.evaluateSegmentation()
