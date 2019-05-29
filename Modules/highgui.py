@@ -1,5 +1,4 @@
 import cv2
-import os
 from Modules import colors
 
 
@@ -17,13 +16,15 @@ def loadImage(imagePath):
     return cv2.imread(imagePath)
 
 
-def showImage(windowname, image):
+def showImage(windowname, image, delay=None):
     """
     Displays an image in the specified window
     """
 
     cv2.imshow(windowname, image)
-    cv2.waitKey()
+    if(delay is not None):
+        cv2.waitKey(delay)
+
 
 def drawLines(image, lines):
     """
@@ -31,11 +32,11 @@ def drawLines(image, lines):
     """
     if lines is not None:
         for line in lines:
-            line = line[0] # a line is a 2D array for compatibility with C++, but will only contain one row, which contains 4 numerical values
+            line = line[0]  # a line is a 2D array for compatibility with C++, but will only contain one row, which contains 4 numerical values
             
             cv2.line(img=image,
-                    pt1=(line[0], line[1]), pt2=(line[2], line[3]),
-                    color=colors.GREEN, thickness=5, lineType=cv2.LINE_AA)
+                     pt1=(line[0], line[1]), pt2=(line[2], line[3]),
+                     color=colors.GREEN, thickness=5, lineType=cv2.LINE_AA)
 
 
 def drawPoints(image, points, color):
@@ -45,14 +46,15 @@ def drawPoints(image, points, color):
     for point in points:
         x = point[0]
         y = point[1]
-        cv2.circle(img = image, center = (int(x), int(y)), radius = 5, color = color, thickness=5)
+        cv2.circle(img=image, center=(int(x), int(y)), radius=5,
+                   color=color, thickness=5)
 
 
-def showImagesHorizontally(windowname, *images): 
+def showImagesHorizontally(windowname, *images, delay=None): 
     """
     Shows multiple images horizontally in the specified window
     """
-    showImage(windowname, cv2.hconcat((images)))
+    showImage(windowname, cv2.hconcat((images)), delay)
 
 
 def saveImage(image, savePath):
@@ -76,13 +78,3 @@ def resizeImage(image, dimension):
             The resized image
     """
     return cv2.resize(src=image, dsize=dimension)
-
-
-def getSavePath(defaultPath, extra):
-    """
-    Gets a new save path which points to the same folder of the original image,
-    but allows to add a different name at the end of the original filename, before the extension.
-    """
-    filepath, filename = os.path.split(defaultPath)
-    filename, extension = filename.split(".")
-    return f"{filepath}\\{filename}{extra}.{extension}"

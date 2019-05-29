@@ -1,6 +1,9 @@
 {
-    "python.linting.pep8Enabled": true,
+    "python.linting.pep8Enabled": false,
     "python.linting.pylintEnabled": false,
     "python.linting.enabled": true,
-    "python.linting.pylintArgs": ["disable-msg=pyline(no-member)"]
+    "python.linting.pylintArgs": [
+        "disable-msg=pyline(no-member)"
+    ],
+    "python.linting.flake8Enabled": true
 }

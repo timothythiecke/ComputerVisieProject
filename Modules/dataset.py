@@ -5,6 +5,8 @@ from pathlib import Path
 import pickle
 import numpy as np
 
+
+
 """
 Dataset needs to be persistent as creation takes about 2-3 minutes during each build phase
 Data set layout
@@ -36,7 +38,7 @@ def buildDataSet(debug = False):
     dirs = os.listdir('./Images/DataSet')
 
     # Initiate SIFT detector
-    orb = cv2.ORB_create() #TODO: FLANN based matching?
+    orb = cv2.ORB_create()  # TODO: FLANN based matching?
 
     for d in dirs:
         if debug:
@@ -47,8 +49,9 @@ def buildDataSet(debug = False):
 
             rel_path = './Images/DataSet/' + d + '/' + filename
             
-            image = highgui.openImage(rel_path)
-            image = cv2.resize(src = image, dsize = (0, 0), dst = None, fx = 0.125, fy = 0.125) # TODO: parameter? should be equivalent to resize factor for contour extraction
+            image = highgui.loadImage(rel_path)
+            image = cv2.resize(src=image, dsize=(0, 0), dst=None,
+                               fx=0.5, fy=0.5)
             
             kp_d, desc_d = orb.detectAndCompute(image, None)
             
@@ -62,7 +65,8 @@ def buildDataSet(debug = False):
 
     return data_set
 
-def getDataSet(resetPersistence = False, debug = False):
+
+def getDataSet(resetPersistence=False, debug=False):
     """
     Gets the dataset, either from disk or creates it and then persists it (through lazy init).
     Parameters
@@ -82,7 +86,7 @@ def getDataSet(resetPersistence = False, debug = False):
     if resetPersistence and config.is_file():
         config.unlink()
 
-    if config.is_file() == False:
+    if config.is_file() is False:
         if debug:
             print('Persistent dataset not found! Creating and persisting...')
         config.touch()
@@ -96,10 +100,12 @@ def getDataSet(resetPersistence = False, debug = False):
             data_set_pickled = []
             for data_set_entry in data_set:
                 pickled_kps = []
-                for point, desc in zip(data_set_entry[2], data_set_entry[3]): # Iterate over keypoints and descriptors at the same time
-                    temp = (point.pt, point.size, point.angle, point.response, point.octave, point.class_id, desc)
+                for point, desc in zip(data_set_entry[2], data_set_entry[3]):  # Iterate over keypoints and descriptors at the same time
+                    temp = (point.pt, point.size, point.angle, point.response,
+                            point.octave, point.class_id, desc)
                     pickled_kps.append(temp)
-                data_set_pickled.append((data_set_entry[0], data_set_entry[1], pickled_kps))
+                data_set_pickled.append((data_set_entry[0], data_set_entry[1],
+                                         pickled_kps))
 
             pickle.dump(data_set_pickled, f)
  
@@ -119,7 +125,6 @@ def getDataSet(resetPersistence = False, debug = False):
                     temp_descriptor = pickled_kp[6]
                     keypoints.append(temp_feature)
                     desc.append(temp_descriptor)
-
 
                 data_set.append((entry[0], entry[1], keypoints, np.array(desc)))
         if debug:

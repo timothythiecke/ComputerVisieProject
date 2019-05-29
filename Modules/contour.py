@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 from Modules import colors, highgui, imgproc
 
-def contour(image, scale, imagepath = '', debug = False, showExtracted = False):
+
+def contour(image):
     """
     Find contours and boxes in an image and attempts to rectify to standard format
     Parameters
@@ -16,39 +17,34 @@ def contour(image, scale, imagepath = '', debug = False, showExtracted = False):
     """
 
     # Resize and convert to grayscale
-    image = cv2.resize(src = image, dsize = (0, 0), dst = None, fx = scale, fy = scale)
+    image = cv2.resize(src=image, dsize=(0, 0), dst=None, fx=0.5, fy=0.5)
     #image = cv2.GaussianBlur(src = image, ksize = (5, 5), sigmaX = 1.0)
 
-    gray = cv2.cvtColor(src = image, code = cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(src=image, code=cv2.COLOR_BGR2GRAY)
 
     # Apply canny edge detector
     thresh1 = 33
     thresh2 = 100
-    edges = cv2.Canny(image = gray, threshold1 = thresh1, threshold2 = thresh2)
-    if debug:
-        cv2.imshow(str(imagepath) + 'canny', edges)
+    edges = cv2.Canny(image=gray, threshold1=thresh1, threshold2=thresh2)
+
         
     # Dilate the canny lines so finding contours is easier
-    dilated = cv2.dilate(src = edges, kernel = np.array([[1,1,1],[1,1,1],[1,1,1]]))
-    if debug:
-        cv2.imshow(str(imagepath) + 'dilate', dilated)
+    dilated = cv2.dilate(src=edges, kernel=np.array([[1, 1, 1],[1, 1, 1],[1, 1, 1]]))
+
 
     # Find contours in image
     contours, hierarchy = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
      
-    if debug:
-        cv2.drawContours(image, contours, -1, colors.GREEN, 2)
-        cv2.imshow(str(imagepath), image)
-        cv2.waitKey()
+
 
     # Sort the contours by contour area, as paintings will likely have larger contours
-    contours = sorted(contours, key = cv2.contourArea, reverse = True)[:10]
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
     box = None
     # https://docs.opencv.org/3.4/dd/d49/tutorial_py_contour_features.html #4
     # Approximate the contours into a polygon (starting with the largest contour)
     # This will yield the first polygon with 4 points
     for contour in contours:
-        polygon = cv2.approxPolyDP(contour, 0.1 * cv2.arcLength(contour, True), True) # TODO, goede waarde vinden
+        polygon = cv2.approxPolyDP(contour, 0.1 * cv2.arcLength(contour, True), True)  # TODO, goede waarde vinden
         if len(polygon) == 4:
             box = polygon
             break
@@ -56,23 +52,18 @@ def contour(image, scale, imagepath = '', debug = False, showExtracted = False):
     # TODO: handling additional polygons
     if box is None:
         print('Could not find bounding box of 4 points')
-        return image
+        return highgui.resizeImage(image, (500, 500))
 
-    if debug:
-        cv2.drawContours(image, [box], -1, colors.RED, 3)
-        cv2.imshow(str(imagepath), image)
-        cv2.waitKey()
-    
     box = box.reshape(4, 2)
-    approx_box = np.zeros((4, 2), dtype = "float32")
+    approx_box = np.zeros((4, 2), dtype="float32")
     
     # Caclulate sum
-    sum = box.sum(axis = 1)
+    sum = box.sum(axis=1)
     approx_box[0] = box[np.argmin(sum)]
     approx_box[2] = box[np.argmax(sum)]
  
     # Calculate difference
-    diff = np.diff(box, axis = 1)
+    diff = np.diff(box, axis=1)
     approx_box[1] = box[np.argmin(diff)]
     approx_box[3] = box[np.argmax(diff)]
 
@@ -96,36 +87,32 @@ def contour(image, scale, imagepath = '', debug = False, showExtracted = False):
     maxHeight = int(largest_y - smallest_y)
 
     bounding_box = np.array([
-	    [0, 0],
-	    [maxWidth, 0],
-	    [maxWidth, maxHeight],
-	    [0, maxHeight]], dtype = "float32")
+        [0, 0],
+        [maxWidth, 0],
+        [maxWidth, maxHeight],
+        [0, maxHeight]], dtype="float32")
 
-    # Apply transformation (homography)
+    # Apply transformation
     transform = cv2.getPerspectiveTransform(approx_box, bounding_box)
     result = cv2.warpPerspective(image, transform, (0, 0))
 
-    if debug:
-        cv2.imshow(str(imagepath) + 'result', result)
-        print(bounding_box)
-        print(bounding_box[2])
     
     # Crop out of original picture
-    #extracted = result[0:int(bounding_box[2][1]), 0:int(bounding_box[2][0])]
     extracted = result[0:maxHeight, 0:maxWidth]
-
-    if debug or showExtracted:
-        cv2.imshow(str(imagepath) + 'crop', extracted)
-
+    extracted = highgui.resizeImage(extracted, dimension=(500, 500))
     return extracted
 
+
+
+
+# used for evaluation
+    
 class PaintingFinder(object):
     def __init__(self):
         pass
 
     @classmethod
     def findPainting(self, image):
-
         contours = self._findContours(image=image)
         polygon = self._findPaintingPolygon(image=image, contours=contours)
         self._transformPainting(image=image, polygon=polygon)
@@ -142,16 +129,20 @@ class PaintingFinder(object):
         ----------
             A list of contours
         """
-        image = cv2.resize(src=image, dsize=(0, 0), dst=None, fx=0.5, fy=0.5)
+        #image = cv2.resize(src=image, dsize=(0, 0), dst=None, fx=0.5, fy=0.5)
         grayscaleImage = imgproc.convertToGrayscale(src=image)
         
         (thresh1, thresh2) = (50, 150)
-        #highgui.showImage("paper", grayscaleImage)
+
         edges = cv2.Canny(image=grayscaleImage, threshold1=thresh1, threshold2=thresh2)
-        #highgui.showImage("paper", edges)
+        
+        # Dilate the canny lines so finding contours is easier
         dilatedImage = cv2.dilate(src=edges, kernel=np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]]))
-        #highgui.showImage("paper", dilatedImage)
-        contours, hierarchy = cv2.findContours(dilatedImage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Find contours in image. We are only interested in outer (EXTERNAL) contours
+        contours = cv2.findContours(dilatedImage, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0] # discard the 'hierarchy' variable
+
+        # Sort the contours by contour area, as paintings will likely have larger contours
         contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
         return contours
 
@@ -172,8 +163,9 @@ class PaintingFinder(object):
         # https://docs.opencv.org/3.4/dd/d49/tutorial_py_contour_features.html #4
         # Approximate the contours into a polygon (starting with the largest contour)
         # This will yield the first polygon with 4 points
+        print(contours)
         for contour in contours:
-            polygon = cv2.approxPolyDP(contour, 0.1 * cv2.arcLength(contour, True), True)
+            polygon = cv2.approxPolyDP(curve=contour, epsilon=0.1 * cv2.arcLength(contour, closed=True), closed=True)
             if len(polygon) == 4:
                 box = polygon
                 break
@@ -181,6 +173,7 @@ class PaintingFinder(object):
 
         if box is None:
             print('Could not find box of 4 points')
+            # return a polygon containing the whole image
             box = np.ndarray(shape=(4, 1, 2), dtype=np.int32)
             points = [(0, 0), (image.shape[0], 0), (image.shape[0], image.shape[1]), (0, image.shape[1])]
             for i in range(0, len(points)):
@@ -194,7 +187,7 @@ class PaintingFinder(object):
     @classmethod
     def _transformPainting(self, image, polygon):
 
-        approxBox = np.zeros((4, 2), dtype = 'float32') # the polygon that contains the 4 points of the actaul painting
+        approxBox = np.zeros((4, 2), dtype='float32') # the polygon that contains the 4 points of the actaul painting
         
         boxSum = polygon.sum(axis = 1)
         approxBox[0] = polygon[np.argmin(boxSum)]
@@ -224,7 +217,7 @@ class PaintingFinder(object):
         maxWidth = int(largestX - smallestX)
         maxHeight = int(largestY - smallestY)
 
-        boundingBox = np.array([ # the new polygon
+        boundingBox = np.array([  # the new polygon
             [0, 0],
             [maxWidth, 0],
             [maxWidth, maxHeight],
@@ -232,51 +225,9 @@ class PaintingFinder(object):
         ], dtype = 'float32')
 
 
-
         transformationMatrix = cv2.getPerspectiveTransform(approxBox, boundingBox)
-        transformedImage = cv2.warpPerspective(src = image, M = transformationMatrix, dsize = (0, 0))
+        transformedImage = cv2.warpPerspective(src=image, M=transformationMatrix, dsize=(0, 0))
 
         extractedImage = transformedImage[0:maxHeight, 0:maxWidth]
 
         return extractedImage
-
-def drawOnVideoFrame(frame, scale, debug = False):
-    # TODO: code below is almost identical to code in contour function
-    if scale is not 1.0:
-        resized = np.zeros((0, 0))
-        frame = cv2.resize(src = frame, dsize = (0, 0), dst = resized, fx = scale, fy = scale)
-
-    gray = cv2.cvtColor(src = frame, code = cv2.COLOR_BGR2GRAY)
-
-    # Apply canny edge detector
-    thresh1 = 33
-    thresh2 = 100
-    edges = cv2.Canny(image = gray, threshold1 = thresh1, threshold2 = thresh2)
-  
-    # Dilate the canny lines so finding contours is easier
-    dilated = cv2.dilate(src = edges, kernel = np.array([[1,1,1],[1,1,1],[1,1,1]]))
-    
-    # Find contours in image
-    contours, hierarchy = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-     
-    cv2.drawContours(frame, contours, -1, colors.GREEN, 2)
-
-    # Sort the contours by contour area, as paintings will likely have larger contours
-    contours = sorted(contours, key = cv2.contourArea, reverse = True)[:10]
-    box = None
-    # https://docs.opencv.org/3.4/dd/d49/tutorial_py_contour_features.html #4
-    # Approximate the contours into a polygon (starting with the largest contour)
-    # This will yield the first polygon with 4 points
-    for contour in contours:
-        polygon = cv2.approxPolyDP(contour, 0.1 * cv2.arcLength(contour, True), True) # TODO, goede waarde vinden
-        if len(polygon) == 4:
-            box = polygon
-            break
-    
-    # TODO: handling additional polygons
-    if box is not None:
-        cv2.drawContours(frame, [box], -1, colors.RED, 3)
-    else:
-        print('Could not determine bounding box in frame')
-
-    return frame
