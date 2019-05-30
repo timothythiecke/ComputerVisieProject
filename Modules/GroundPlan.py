@@ -105,7 +105,7 @@ class GroundPlan(object):
         F.write(output)
         F.close()
         subprocess.run(['dot', 'groundplan.dot', '-Tpng', '-o', 'groundplan.png'])
-        return highgui.resizeImage(highgui.loadImage("groundplan.jpg"), dimension=(1000, 500))
+        return highgui.loadImage("groundplan.jpg")
         
 
     def markVisited(self, mark):

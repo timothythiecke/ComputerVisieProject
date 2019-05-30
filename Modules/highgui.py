@@ -16,16 +16,21 @@ def loadImage(imagePath):
     return cv2.imread(imagePath)
 
 
-def showImage(windowname, image, delay=None):
+def createWindowAtCoordinates(windowname, x, y):
+    """
+    Creates a window at the specific location
+    """
+    cv2.namedWindow(windowname)
+    cv2.moveWindow(windowname, x, y)
+
+
+def showImage(windowname, image, delay=0):
     """
     Displays an image in the specified window
     """
 
     cv2.imshow(windowname, image)
-    if(delay is not None):
-        cv2.waitKey(delay)
-    else:
-        cv2.waitKey()
+    cv2.waitKey(delay)
 
 
 def drawLines(image, lines):

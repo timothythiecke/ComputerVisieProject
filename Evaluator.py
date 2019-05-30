@@ -1,17 +1,14 @@
-import csv
+
 import pickle
-import matplotlib.pyplot as plt
-from Modules import highgui
-from Modules import imgproc
-from Modules import colors
 import numpy as np
 import cv2
+
+from Modules import highgui
+from Modules import colors
 
 from Modules.Contour import PaintingFinder
 from Modules.Matching import Matcher
 from Modules.Dataset import getDataSet
-
-from math import sqrt
 
 
 PATH = 'Images/ValidationSet'
@@ -19,7 +16,7 @@ PATH = 'Images/ValidationSet'
 
 class Evaluator(object):
     """
-    This class measures the performance of the painting segmentation algorithm
+    This class measures the performance of the full algorithm
     """
     def __init__(self):
         self.images = []
@@ -33,8 +30,10 @@ class Evaluator(object):
 
         print(self.images)
 
-
     def evaluateSegmentation(self):
+        """
+        Evaluate the segmentation algorithm.
+        """
         paintingFinder = PaintingFinder()
         percentages = []
         for i in range(0, len(self.images)):

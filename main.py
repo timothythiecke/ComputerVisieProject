@@ -1,6 +1,5 @@
-import queue
-import threading
 import cv2
+import screeninfo
 
 from Modules.Dataset import getDataSet
 from Modules.GroundPlan import GroundPlan, groundPlanMessageConsumer
@@ -14,12 +13,28 @@ from Modules import optcheck, highgui
 def matchCallback(future):
     (matchedPainting, room) = future.result()
     future.groundPlan.markVisited(room)
-    highgui.showImagesHorizontally("Matching Result", 3000,
-                                   future.extractedPainting, matchedPainting)
-
+    extractedPainting = highgui.resizeImage(image=future.extractedPainting,
+                                            dimension=(
+                                                int(future.resolution[1]/4),
+                                                int(future.resolution[0]/2)
+                                            ))
+    matchedPainting = highgui.resizeImage(image=matchedPainting,
+                                          dimension=(
+                                            int(future.resolution[1]/4),
+                                            int(future.resolution[0]/2))
+                                          )
+    highgui.showImage(windowname=f"Extract - {future.matchWindowFlag}",
+                      image=extractedPainting,
+                      delay=1)
+    highgui.showImage(windowname=f"Match - {future.matchWindowFlag}",
+                      image=matchedPainting,
+                      delay=3000)
+ 
 
 
 def main():
+
+   
     videoPath = optcheck.getVideoPath()
     dataSet = getDataSet()
     groundPlan = GroundPlan()
@@ -29,16 +44,28 @@ def main():
 
     frameInterval = 50  # determines the amount of frames before matching
     (frameCount, frameIndex) = (0, 0)
+
+    # initialize windows 
+    monitor = screeninfo.get_monitors()[0]
+    width, height = (monitor.width, monitor.height)
+    highgui.createWindowAtCoordinates("Video", int(width/2), 0)
+    highgui.createWindowAtCoordinates("Match - 0", int(width/4), 0) 
+    highgui.createWindowAtCoordinates("Match - 1", int(width/4), int(height/2))
+    highgui.createWindowAtCoordinates("Extract - 0", 0, 0) 
+    highgui.createWindowAtCoordinates("Extract - 1", 0, int(height/2))
+    matchWindowFlag = 0 # is used to determine which match window is used.
+
     # waitKey returns ordinal value of the button that is pressed, we indicate 'q' as a button to quit the program
     # run video at 30 FPS ~ One frame per 33.3333333... milliseconds
     while(videoCapture.isOpened() and not cv2.waitKey(33) == ord('q')):
         videoFrame = videoCapture.read()[1]  # discard the 'succeeded variable'
         videoFrame = highgui.resizeImage(videoFrame, dimension=(
-                                    int(videoFrame.shape[1] * 0.5),  # width
-                                    int(videoFrame.shape[0] * 0.5))  # height
+                                    int(width/2),  # width
+                                    height)  # height
                                     )
 
-        highgui.showImage("Video", videoFrame)
+
+        highgui.showImage("Video", videoFrame, 1)
 
         if frameCount == frameInterval:
             frameCount = 0
@@ -48,6 +75,9 @@ def main():
             future = threadExecutor.submit(matcher.match, extractedPainting)
             future.extractedPainting = extractedPainting
             future.groundPlan = groundPlan
+            future.matchWindowFlag = matchWindowFlag
+            future.resolution = (height, width)
+            matchWindowFlag = (matchWindowFlag + 1) % 2
             future.add_done_callback(matchCallback)
 
         frameCount += 1
@@ -56,7 +86,7 @@ def main():
     videoCapture.release()
 
     cv2.destroyAllWindows()
-    highgui.showImage("Groundplan", groundPlan.visualize())
+    #highgui.showImage("Groundplan", groundPlan.visualize())
 
 
 
