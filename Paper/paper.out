@@ -6,7 +6,8 @@
 \BOOKMARK [2][-]{subsection.2.3}{Path Tracking}{section.2}% 6
 \BOOKMARK [1][-]{section.3}{Results}{}% 7
 \BOOKMARK [2][-]{subsection.3.1}{Dataset}{section.3}% 8
-\BOOKMARK [2][-]{subsection.3.2}{Testset}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Test set}{section.3}% 9
 \BOOKMARK [2][-]{subsection.3.3}{Segmentation Accuracy}{section.3}% 10
-\BOOKMARK [2][-]{subsection.3.4}{Matching Accuracy}{section.3}% 11
-\BOOKMARK [1][-]{section.4}{Conclusion}{}% 12
+\BOOKMARK [2][-]{subsection.3.4}{Matching and Localization Accuracy}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.5}{Qualitative analysis}{section.3}% 12
+\BOOKMARK [1][-]{section.4}{Conclusion}{}% 13

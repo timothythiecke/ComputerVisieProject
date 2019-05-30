@@ -106,7 +106,7 @@ class Evaluator(object):
         plt.show()
 
 
-    def evaluteMatching(self):
+    def evaluateMatching(self):
         dataSet = getDataSet()
         matcher = Matcher(dataSet)
 
@@ -114,18 +114,11 @@ class Evaluator(object):
             imageName = self.images[i]
             image = highgui.loadImage(imagePath=f"{PATH}/{imageName}")
             image = highgui.resizeImage(image=image, dimension=(500, 500))
-            matches = matcher.match(image, topMatchesCount=1)
+            match = matcher.match(image)[0]
+     
 
-            imagePath = './Images/DataSet/' + dataSet[matches[0][0]][0] + '/' + dataSet[matches[0][0]][1]
-            data_set_image = highgui.loadImage(imagePath)
-            resized = np.zeros((0, 0))
-            scale = 0.125
-            resized = cv2.resize(src=data_set_image, dsize=(0, 0), dst=resized, fx=scale, fy=scale)
-
-            # Generate comparison image between extracted and dataset    
-            comparison = cv2.drawMatches(img1=image, keypoints1=matches[0][2], img2=resized, keypoints2=matches[0][3], matches1to2=matches[0][4],   outImg=None, flags=2)
-            highgui.showImage("compare", comparison, delay=0)
+            highgui.showImagesHorizontally("Comparison", 0, image, match)
 
 
 evaluator = Evaluator()
-evaluator.evaluateSegmentation()
+evaluator.evaluateMatching()

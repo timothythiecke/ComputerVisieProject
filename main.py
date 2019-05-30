@@ -42,7 +42,7 @@ def main():
     videoCapture = cv2.VideoCapture(videoPath)
     threadExecutor = ThreadPoolExecutor(max_workers=32)
 
-    frameInterval = 50  # determines the amount of frames before matching
+    frameInterval = 30  # determines the amount of frames before matching
     (frameCount, frameIndex) = (0, 0)
 
     # initialize windows 

@@ -6,30 +6,6 @@
 \usepackage{caption}
 
 
-%flowchart DOT code
-%digraph G {
-%	rankdir=LR
-%	node [shape = rectangle]
-
-%	a[label="Input video"]
-%	b[label="Painting segmentation\n with bounding box"]
-%	c[label="Painting transformation\n to standard format"]
-%	d[label="Feature detection\n using brute force\n ORB matcher"]
-%	e[label="Comparing feature vector\n against other paintings in dataset"]
-%	f[label="Plot location of painting on ground plan"]
-%	
-%	a -> b [label="frames"]
-%	b -> c [label="segmented painting"]
-%	c -> d [label="painting in\n standard format"]
-%	d -> e [label="feature vector"]
-%	e -> f [label="match result"]
-%	
-%	{rank=same; a d}
-%	{rank=same; b e}
-%	{rank=same; c f}
-%}
-
-
 \newcommand{\todo}[1]{\color{red}\_ToDo: #1 \color{black}}
 \graphicspath{{./img/}}
 \title{Continuous room localization using painting detection}
@@ -37,7 +13,7 @@
 \begin{document}
 	\maketitle
 	\begin{abstract}
-		This paper describes a localization method based on paintings from a museum, in this particular case The Museum of Fine Arts, Ghent. The method consists of three parts. The first part is painting segmentation which attempts to detect a painting from an arbitrary video frame using painting contours and a bounding box and transforms this painting into a standard format such that it can be used for analysis. The second part considers the transformed image and uses a brute-force ORB \cite{Rublee2011} matcher to detect key features and descriptors. These features are matched against a database using a linear lookup method. The third step uses the information of the painting, which contains the room it is located in, to mark it on a ground plan of the museum.	
+		This paper describes a localization method based on paintings from a museum, in this particular case The Museum of Fine Arts, Ghent. The method consists of three parts. The first part is painting segmentation which attempts to detect a painting from an arbitrary video frame using painting contours and a bounding box and transforms this painting into a standard format such that it can be used for analysis. The second part considers the transformed image and uses a brute-force ORB  matcher to detect key features and descriptors. These features are matched against a database using a linear lookup method. The third step uses the information of the painting, which contains the room it is located in, to mark it on a ground plan of the museum.	The painting segmentation achieves an accuracy of 47.1\% while the matcher achieves 46.67\%.
 	\end{abstract}
 
 	\input{./tex/Introduction.tex}

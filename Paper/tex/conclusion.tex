@@ -1,9 +1,6 @@
 \section{Conclusion}
 \label{sec:conclusion}
-	\todo{overview of the most important contributions and the results, without introducing anything new}
-	
-	\todo{after the reader has read the paper, the reader can look at the contributions and results from a different viewpoint}
-	
-	\todo{statements can be made more explicit}
-	
-	\todo{eventueel future work}
+In this work we discussed three parts: a painting segmentation technique, a matching technique and the localisation method. Painting segmentation is achieved using a Canny edge detection combined with finding contours. Due to canny edge detection, frames are also included as part of the painting. The extracted paintings are supplied to a brute-force ORB matcher which detects key features and descriptors from the paintings. The matching happens in a linear fashion, resulting in a slow execution speed, which was solved using multi-threading and reducing the dataset size. Both the segmentation and matching are subpar, scoring respectively 47.10\% and 46.7\% accuracy. Due to this low accuracy, the localisation step is deemed not trustworthy to be used.
+
+The current implementation of the algorithm uses a per-frame matching technique. Using a buffer and applying e.g. majority voting or weighted voting could increase the accuracy of the matching method. 
+
