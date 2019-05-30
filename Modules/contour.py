@@ -163,7 +163,7 @@ class PaintingFinder(object):
         # https://docs.opencv.org/3.4/dd/d49/tutorial_py_contour_features.html #4
         # Approximate the contours into a polygon (starting with the largest contour)
         # This will yield the first polygon with 4 points
-        print(contours)
+
         for contour in contours:
             polygon = cv2.approxPolyDP(curve=contour, epsilon=0.1 * cv2.arcLength(contour, closed=True), closed=True)
             if len(polygon) == 4:

@@ -24,6 +24,8 @@ def showImage(windowname, image, delay=None):
     cv2.imshow(windowname, image)
     if(delay is not None):
         cv2.waitKey(delay)
+    else:
+        cv2.waitKey()
 
 
 def drawLines(image, lines):
@@ -50,7 +52,7 @@ def drawPoints(image, points, color):
                    color=color, thickness=5)
 
 
-def showImagesHorizontally(windowname, *images, delay=None): 
+def showImagesHorizontally(windowname, delay=None, *images): 
     """
     Shows multiple images horizontally in the specified window
     """

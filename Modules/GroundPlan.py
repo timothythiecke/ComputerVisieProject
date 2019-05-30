@@ -76,15 +76,15 @@ class GroundPlan(object):
         #for room in self.rooms:
         #    for neighbour in GroundPlan.adjacencyList[room.mark]:
         #        room.appendToAdjacanyList(neighbour)
-        self.maxVisitedIndex = 0 # keeps the maximum amount of visited rooms, this is used to determine the intermediate and end node
-        self.previousRoom = Room('-') # keeps information of the previous room, is needed for transitions
-        self.roomTransitions = [] # keeps information of room transitions
-
+        self.maxVisitedIndex = 0  # keeps the maximum amount of visited rooms, this is used to determine the intermediate and end node
+        self.previousRoom = Room('-')  # keeps information of the previous room, is needed for transitions. A dummy room is used here as a starting room
+        self.roomTransitions = []  # keeps information of room transitions
 
 
     def visualize(self):
         """
-        Generates a .dot file which can be used by the graphviz engine (http://www.webgraphviz.com/)
+        Builds a .dot file and generates a .png image.
+        This image gets loaded as a cv2 image and is returned.
         """
 
         output = "digraph G {"
@@ -104,15 +104,18 @@ class GroundPlan(object):
         F = open("groundplan.dot", "w")
         F.write(output)
         F.close()
-        subprocess.run(['dot', 'groundplan.dot', '-Tpng', '-o', 'groundplan.jpg'])
-        #cv2.imshow("Path",  highgui.resizeImage(highgui.loadImage("groundplan.jpg"), dimension=(1000,1000)))
-        highgui.showImage("Path", highgui.resizeImage(highgui.loadImage("groundplan.jpg"), dimension=(1000,1000)))
+        subprocess.run(['dot', 'groundplan.dot', '-Tpng', '-o', 'groundplan.png'])
+        return highgui.resizeImage(highgui.loadImage("groundplan.jpg"), dimension=(1000, 500))
+        
 
     def markVisited(self, mark):
         """
         Marks a node as visited. It also keeps track of transitions between nodes.
         """
-        self.maxVisitedIndex += 1
+        if mark not in self.nodes:
+            return
+
+        
         for room in self.rooms:
             if(room.mark == mark):
                 room.visitedIndex = self.maxVisitedIndex
@@ -120,6 +123,7 @@ class GroundPlan(object):
                 if(self.previousRoom.mark is not '-'):
                     try:
                         adjacany = next(adj for adj in self.adjacencyList if adj.fromRoom == self.previousRoom and adj.toRoom == room)
+                        self.maxVisitedIndex += 1
                         adjacany.color = "green"
                     except StopIteration:
                         print('A room was visited which is not in the neighbour list of the previous visited room') # TODO: needs better message or no op
@@ -135,8 +139,6 @@ def groundPlanMessageConsumer(groundPlan=None, q=None):
                 break
             else:
                 try:
-                    print(zaalq)
                     groundPlan.markVisited(zaal)
-                    groundPlan.visualize()
                 except:
                     print('GroundPlan.markVisited threw an exception')

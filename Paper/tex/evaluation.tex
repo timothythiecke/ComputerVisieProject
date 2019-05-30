@@ -1,22 +1,2 @@
-\section{Evaluation}
-	To measure the performance metrics of our algorithm, we gather statistics from the three different parts of the method: painting segmentation, the matching algorithm and room localization. A random sample ($n = 30$) of the dataset was taken to evaluate our method.
-	
-	To evaluate the painting segmentation algorithm, each image from the random sample must first be manually segmented. This manual segmentation results in 4 coordinates of a polygon which represent the ideal polygon and will be used as the ground truth. Afterwards, the segmentation is done automatically by the algorithm, which also gives four coordinates of a polygon. To illustrate, both polygons are shown on figure \ref{fig:painting_segmentation_validation_1}.
-	To measure the similarity of these two polygons, we first calculate the intersection area $A_i$ and the area of the ideal polygon $A_{pi}$. The ratio of $A_i$ to $A_{pi}$ describes the closeness of two polygons with 100\% being a perfect match and 0\% meaning there is no intersection at all between the two polygons. There is one case where this statistic does not work. When the ideal polygon is fully enclosed by the predicted polygon, $A_i$ will be equal to $A_{pi}$, resulting in a fake perfect match. To prevent this, the roles of the green and red polygon are switched such that we now consider the area of the predicted polygon, $A_{pp}$, instead of $A_{pi}$.
-	
-	The next metric evaluates the matching aspect of the algorithm. Here, there is no notion of similarity between two paintings. A matched painting is either correct or incorrect.
-	
-
-	
-	\begin{figure}
-		\centering
-		\includegraphics[width=\linewidth]{painting_segmentation_validation_1}
-		\caption{A comparison of a manually selected polygon (red) and the polygon found by the segmentation algorithm (green).}
-		\label{fig:painting_segmentation_validation_1}
-	\end{figure}
-
-
-	
-	The matching algorithm has to be evaluated manually by comparing the matcher's result. The correctness of the matching algorithm is simply the ratio of the correct matches against the false matches.
-	
-	To evaluate the room localization, a sample of the video dataset was taken. The generated path is compared against the actual path.
+\section{Evaluation Method}
+\label{sec:evaluation_method}

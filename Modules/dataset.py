@@ -50,8 +50,7 @@ def buildDataSet(debug = False):
             rel_path = './Images/DataSet/' + d + '/' + filename
             
             image = highgui.loadImage(rel_path)
-            image = cv2.resize(src=image, dsize=(0, 0), dst=None,
-                               fx=0.5, fy=0.5)
+            image = highgui.resizeImage(image, (1000, 1000))
             
             kp_d, desc_d = orb.detectAndCompute(image, None)
             
