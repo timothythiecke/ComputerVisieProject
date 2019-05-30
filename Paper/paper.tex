@@ -9,7 +9,7 @@
 %digraph G {
 %	rankdir=LR
 %	node [shape = rectangle]
-	
+
 %	a[label="Input video"]
 %	b[label="Painting segmentation\n with bounding box"]
 %	c[label="Painting transformation\n to standard format"]
@@ -36,8 +36,7 @@
 \begin{document}
 	\maketitle
 	\begin{abstract}
-		This paper describes a localisation method based on paintings from a museum, in this particular case The Museum of Fine Arts, Ghent. The method consists of three parts. The first part is painting segmentation which attempts to detect a painting from an arbitrary video frame using painting contours and a bounding box and transforms this painting into a standard format such that it can be used for analysis. The second part considers the transformed image and uses a brute-force ORB \cite{Rublee2011} matcher to detect key features and descriptors. These features are matched against a database using a linear lookup method. The third step uses the information of the painting, which contains the room it is located in, to mark it on a ground plan of the museum.
-
+		This paper describes a localization method based on paintings from a museum, in this particular case The Museum of Fine Arts, Ghent. The method consists of three parts. The first part is painting segmentation which attempts to detect a painting from an arbitrary video frame using painting contours and a bounding box and transforms this painting into a standard format such that it can be used for analysis. The second part considers the transformed image and uses a brute-force ORB \cite{Rublee2011} matcher to detect key features and descriptors. These features are matched against a database using a linear lookup method. The third step uses the information of the painting, which contains the room it is located in, to mark it on a ground plan of the museum.	
 	\end{abstract}
 
 	\input{./tex/Introduction.tex}
