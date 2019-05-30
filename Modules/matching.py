@@ -7,9 +7,6 @@ import random
 from Modules import optcheck, highgui, imgproc
 
 
-
-# used for evaluation
-
 class Matcher(object):
     def __init__(self, dataset):
         self.dataset = dataset

@@ -4,7 +4,7 @@ use File::Copy;
 my $imageNum = 0;
 my $max = 30;
 
-recursive_dir("C:\\Users\\counterpoint\\Desktop\\ComputerVisieProject\\Images\\TestSet");
+recursive_dir("C:\\Users\\counterpoint\\Desktop\\ComputerVisieProject\\Images\\TestSet\\single_paintings");
 
 sub recursive_dir {
 
@@ -25,7 +25,7 @@ sub recursive_dir {
             
             if(-f $fullpath){         
                 my $random = rand(1);
-                if($random > 0.7 && $imageNum < $max) {
+                if($random > 0.3 && $imageNum < $max) {
                     $imageNum++;
                     print  "- $el\n";  
                     copy($fullpath, "C:\\Users\\counterpoint\\Desktop\\ComputerVisieProject\\Images\\TestSet\\$imageNum.jpg");

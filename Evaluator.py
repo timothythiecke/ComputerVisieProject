@@ -2,6 +2,7 @@
 import pickle
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 from Modules import highgui
 from Modules import colors
@@ -61,8 +62,8 @@ class Evaluator(object):
                 groundTruthInContourFormat[i][0][1] = groundTruthPoints[i][1]
        
             cv2.drawContours(image, [polygon], -1, colors.GREEN, 3)
-            #cv2.drawContours(image, [groundTruthInContourFormat], -1, colors.RED, 3)
-            highgui.showImage("k", image)
+            cv2.drawContours(image, [groundTruthInContourFormat], -1, colors.RED, 3)
+            highgui.showImage("Segmentation Evaluation", image, 1000)
             areaPrediction = 0
             areaGroundTruth = 0
             areaIntersection = 0
@@ -75,20 +76,35 @@ class Evaluator(object):
                     areaGroundTruth += pointIsInGroundTruth is True
                     areaIntersection += (pointIsInPrediction is True and pointIsInGroundTruth is True)
 
-            try:
+            if(areaIntersection == areaGroundTruth and areaPrediction > areaGroundTruth):
+                areaGroundTruth, areaPrediction = areaPrediction, areaGroundTruth
+            
+                                # swap areas when green polygon encloses red polygon
                 
-                # swap areas when green polygon encloses red polygon
-                if(areaIntersection == areaGroundTruth and areaPrediction > areaGroundTruth):
-                    areaGroundTruth, areaPrediction = areaPrediction, areaGroundTruth
-                ratio = areaIntersection / (areaGroundTruth / 100)
-            except:
-                ratio = 0
-                print("no intersection")
+            ratio = areaIntersection / (areaGroundTruth / 100)
+            
+    
             print(areaPrediction, areaGroundTruth, areaIntersection, ":", ratio , "% match")
             percentages.append(ratio)
             #highgui.showImage("canvas", image)
         
-        print(sum(percentages) / len(percentages))
+        groups = [0] * 10
+        for percentage in sorted(percentages):
+            index = int((percentage - (percentage % 10))/10)
+            groups[index] += 1
+
+        print("Average: ", sum(percentages) / len(percentages))
+
+        indices = np.arange(10)
+        fig, ax = plt.subplots()
+        ax.bar(indices, groups, 0.4, color='SkyBlue')
+        plt.title("Overview of segmentation correctness")
+        plt.ylabel('Count')
+        plt.xlabel('Percentage group')
+        ax.set_xticks(indices)
+        ax.set_xticklabels(('0-10', '10-20','20-30', '30-40','40-50','50-60','60-70','70-80','80-90','90-100'))
+        plt.show()
+
 
     def evaluteMatching(self):
         dataSet = getDataSet()

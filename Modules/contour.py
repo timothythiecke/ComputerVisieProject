@@ -105,7 +105,39 @@ def contour(image):
 
 
 
-# used for evaluation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# the class is only used for evaluation
     
 class PaintingFinder(object):
     def __init__(self):

@@ -28,7 +28,7 @@ def matchCallback(future):
                       delay=1)
     highgui.showImage(windowname=f"Match - {future.matchWindowFlag}",
                       image=matchedPainting,
-                      delay=3000)
+                      delay=1)
  
 
 
